@@ -5,6 +5,9 @@ import {Board} from "./Board.tsx";
 import {Purchase} from "./Purchase.tsx";
 import Users from './api/Users.tsx';
 import {Login} from "./Login.tsx";
+import Admins from "./api/Admins.tsx";
+import Transactions from "./api/Transactions.tsx";
+import AdminBoards from "./api/AdminBoards.tsx";
 
 const myRoutes : RouteObject[] =[
     {
@@ -27,7 +30,6 @@ const myRoutes : RouteObject[] =[
         path: '/Login',
         element: <Login/>
     }
-
 ]
 
 
@@ -78,6 +80,9 @@ function Home() {
             </div>
             <div>
             <Users />
+            <Admins />
+                <Transactions />
+                <AdminBoards/>
             </div>
         </>
     );
