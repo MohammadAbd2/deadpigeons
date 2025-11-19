@@ -7,117 +7,115 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-namespace ApiClient {
-
 export interface IApiClient {
 
     /**
      * @return OK
      */
-    adminsGET(): Promise<void>;
+    adminsAll(): Promise<Admin[]>;
 
     /**
      * @param body (optional) 
      * @return OK
      */
-    adminsPOST(body: Admin | undefined): Promise<void>;
+    adminsPOST(body: Admin | undefined): Promise<Admin>;
 
     /**
      * @return OK
      */
-    adminsGET2(id: string): Promise<void>;
-
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
-    adminsPUT(id: string, body: Admin | undefined): Promise<void>;
-
-    /**
-     * @return OK
-     */
-    adminsDELETE(id: string): Promise<void>;
-
-    /**
-     * @return OK
-     */
-    boardsGET(): Promise<void>;
+    adminsGET(id: string): Promise<Admin>;
 
     /**
      * @param body (optional) 
      * @return OK
      */
-    boardsPOST(body: Board | undefined): Promise<void>;
+    adminsPUT(id: string, body: Admin | undefined): Promise<Admin>;
 
     /**
      * @return OK
      */
-    boardsGET2(id: string): Promise<void>;
-
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
-    boardsPUT(id: string, body: Board | undefined): Promise<void>;
+    adminsDELETE(id: string): Promise<string>;
 
     /**
      * @return OK
      */
-    boardsDELETE(id: string): Promise<void>;
-
-    /**
-     * @return OK
-     */
-    transactionsGET(): Promise<void>;
+    boardsAll(): Promise<Board[]>;
 
     /**
      * @param body (optional) 
      * @return OK
      */
-    transactionsPOST(body: Transaction | undefined): Promise<void>;
+    boardsPOST(body: Board | undefined): Promise<Board>;
 
     /**
      * @return OK
      */
-    transactionsGET2(id: string): Promise<void>;
-
-    /**
-     * @param body (optional) 
-     * @return OK
-     */
-    transactionsPUT(id: string, body: Transaction | undefined): Promise<void>;
-
-    /**
-     * @return OK
-     */
-    transactionsDELETE(id: string): Promise<void>;
-
-    /**
-     * @return OK
-     */
-    usersGET(): Promise<void>;
+    boardsGET(id: string): Promise<Board>;
 
     /**
      * @param body (optional) 
      * @return OK
      */
-    usersPOST(body: User | undefined): Promise<void>;
+    boardsPUT(id: string, body: Board | undefined): Promise<Board>;
 
     /**
      * @return OK
      */
-    usersGET2(id: string): Promise<void>;
+    boardsDELETE(id: string): Promise<string>;
+
+    /**
+     * @return OK
+     */
+    transactionsAll(): Promise<Transaction[]>;
 
     /**
      * @param body (optional) 
      * @return OK
      */
-    usersPUT(id: string, body: User | undefined): Promise<void>;
+    transactionsPOST(body: Transaction | undefined): Promise<Transaction>;
 
     /**
      * @return OK
      */
-    usersDELETE(id: string): Promise<void>;
+    transactionsGET(id: string): Promise<Transaction>;
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    transactionsPUT(id: string, body: Transaction | undefined): Promise<Transaction>;
+
+    /**
+     * @return OK
+     */
+    transactionsDELETE(id: string): Promise<string>;
+
+    /**
+     * @return OK
+     */
+    usersAll(): Promise<User[]>;
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    usersPOST(body: User | undefined): Promise<User>;
+
+    /**
+     * @return OK
+     */
+    usersGET(id: string): Promise<User>;
+
+    /**
+     * @param body (optional) 
+     * @return OK
+     */
+    usersPUT(id: string, body: User | undefined): Promise<User>;
+
+    /**
+     * @return OK
+     */
+    usersDELETE(id: string): Promise<string>;
 }
 
 export class ApiClient implements IApiClient {
@@ -133,41 +131,52 @@ export class ApiClient implements IApiClient {
     /**
      * @return OK
      */
-    adminsGET(): Promise<void> {
+    adminsAll(): Promise<Admin[]> {
         let url_ = this.baseUrl + "/api/Admins";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
             headers: {
+                "Accept": "application/json"
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processAdminsGET(_response);
+            return this.processAdminsAll(_response);
         });
     }
 
-    protected processAdminsGET(response: Response): Promise<void> {
+    protected processAdminsAll(response: Response): Promise<Admin[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(Admin.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<Admin[]>(null as any);
     }
 
     /**
      * @param body (optional) 
      * @return OK
      */
-    adminsPOST(body: Admin | undefined): Promise<void> {
+    adminsPOST(body: Admin | undefined): Promise<Admin> {
         let url_ = this.baseUrl + "/api/Admins";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -178,6 +187,7 @@ export class ApiClient implements IApiClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             }
         };
 
@@ -186,25 +196,28 @@ export class ApiClient implements IApiClient {
         });
     }
 
-    protected processAdminsPOST(response: Response): Promise<void> {
+    protected processAdminsPOST(response: Response): Promise<Admin> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Admin.fromJS(resultData200);
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<Admin>(null as any);
     }
 
     /**
      * @return OK
      */
-    adminsGET2(id: string): Promise<void> {
+    adminsGET(id: string): Promise<Admin> {
         let url_ = this.baseUrl + "/api/Admins/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -214,34 +227,38 @@ export class ApiClient implements IApiClient {
         let options_: RequestInit = {
             method: "GET",
             headers: {
+                "Accept": "application/json"
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processAdminsGET2(_response);
+            return this.processAdminsGET(_response);
         });
     }
 
-    protected processAdminsGET2(response: Response): Promise<void> {
+    protected processAdminsGET(response: Response): Promise<Admin> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Admin.fromJS(resultData200);
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<Admin>(null as any);
     }
 
     /**
      * @param body (optional) 
      * @return OK
      */
-    adminsPUT(id: string, body: Admin | undefined): Promise<void> {
+    adminsPUT(id: string, body: Admin | undefined): Promise<Admin> {
         let url_ = this.baseUrl + "/api/Admins/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -255,6 +272,7 @@ export class ApiClient implements IApiClient {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             }
         };
 
@@ -263,25 +281,28 @@ export class ApiClient implements IApiClient {
         });
     }
 
-    protected processAdminsPUT(response: Response): Promise<void> {
+    protected processAdminsPUT(response: Response): Promise<Admin> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Admin.fromJS(resultData200);
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<Admin>(null as any);
     }
 
     /**
      * @return OK
      */
-    adminsDELETE(id: string): Promise<void> {
+    adminsDELETE(id: string): Promise<string> {
         let url_ = this.baseUrl + "/api/Admins/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -291,6 +312,7 @@ export class ApiClient implements IApiClient {
         let options_: RequestInit = {
             method: "DELETE",
             headers: {
+                "Accept": "application/json"
             }
         };
 
@@ -299,59 +321,74 @@ export class ApiClient implements IApiClient {
         });
     }
 
-    protected processAdminsDELETE(response: Response): Promise<void> {
+    protected processAdminsDELETE(response: Response): Promise<string> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null as any;
+    
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<string>(null as any);
     }
 
     /**
      * @return OK
      */
-    boardsGET(): Promise<void> {
+    boardsAll(): Promise<Board[]> {
         let url_ = this.baseUrl + "/api/Boards";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
             headers: {
+                "Accept": "application/json"
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processBoardsGET(_response);
+            return this.processBoardsAll(_response);
         });
     }
 
-    protected processBoardsGET(response: Response): Promise<void> {
+    protected processBoardsAll(response: Response): Promise<Board[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(Board.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<Board[]>(null as any);
     }
 
     /**
      * @param body (optional) 
      * @return OK
      */
-    boardsPOST(body: Board | undefined): Promise<void> {
+    boardsPOST(body: Board | undefined): Promise<Board> {
         let url_ = this.baseUrl + "/api/Boards";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -362,6 +399,7 @@ export class ApiClient implements IApiClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             }
         };
 
@@ -370,25 +408,28 @@ export class ApiClient implements IApiClient {
         });
     }
 
-    protected processBoardsPOST(response: Response): Promise<void> {
+    protected processBoardsPOST(response: Response): Promise<Board> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Board.fromJS(resultData200);
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<Board>(null as any);
     }
 
     /**
      * @return OK
      */
-    boardsGET2(id: string): Promise<void> {
+    boardsGET(id: string): Promise<Board> {
         let url_ = this.baseUrl + "/api/Boards/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -398,34 +439,38 @@ export class ApiClient implements IApiClient {
         let options_: RequestInit = {
             method: "GET",
             headers: {
+                "Accept": "application/json"
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processBoardsGET2(_response);
+            return this.processBoardsGET(_response);
         });
     }
 
-    protected processBoardsGET2(response: Response): Promise<void> {
+    protected processBoardsGET(response: Response): Promise<Board> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Board.fromJS(resultData200);
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<Board>(null as any);
     }
 
     /**
      * @param body (optional) 
      * @return OK
      */
-    boardsPUT(id: string, body: Board | undefined): Promise<void> {
+    boardsPUT(id: string, body: Board | undefined): Promise<Board> {
         let url_ = this.baseUrl + "/api/Boards/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -439,6 +484,7 @@ export class ApiClient implements IApiClient {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             }
         };
 
@@ -447,25 +493,28 @@ export class ApiClient implements IApiClient {
         });
     }
 
-    protected processBoardsPUT(response: Response): Promise<void> {
+    protected processBoardsPUT(response: Response): Promise<Board> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Board.fromJS(resultData200);
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<Board>(null as any);
     }
 
     /**
      * @return OK
      */
-    boardsDELETE(id: string): Promise<void> {
+    boardsDELETE(id: string): Promise<string> {
         let url_ = this.baseUrl + "/api/Boards/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -475,6 +524,7 @@ export class ApiClient implements IApiClient {
         let options_: RequestInit = {
             method: "DELETE",
             headers: {
+                "Accept": "application/json"
             }
         };
 
@@ -483,59 +533,74 @@ export class ApiClient implements IApiClient {
         });
     }
 
-    protected processBoardsDELETE(response: Response): Promise<void> {
+    protected processBoardsDELETE(response: Response): Promise<string> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null as any;
+    
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<string>(null as any);
     }
 
     /**
      * @return OK
      */
-    transactionsGET(): Promise<void> {
+    transactionsAll(): Promise<Transaction[]> {
         let url_ = this.baseUrl + "/api/Transactions";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
             headers: {
+                "Accept": "application/json"
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processTransactionsGET(_response);
+            return this.processTransactionsAll(_response);
         });
     }
 
-    protected processTransactionsGET(response: Response): Promise<void> {
+    protected processTransactionsAll(response: Response): Promise<Transaction[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(Transaction.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<Transaction[]>(null as any);
     }
 
     /**
      * @param body (optional) 
      * @return OK
      */
-    transactionsPOST(body: Transaction | undefined): Promise<void> {
+    transactionsPOST(body: Transaction | undefined): Promise<Transaction> {
         let url_ = this.baseUrl + "/api/Transactions";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -546,6 +611,7 @@ export class ApiClient implements IApiClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             }
         };
 
@@ -554,25 +620,28 @@ export class ApiClient implements IApiClient {
         });
     }
 
-    protected processTransactionsPOST(response: Response): Promise<void> {
+    protected processTransactionsPOST(response: Response): Promise<Transaction> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Transaction.fromJS(resultData200);
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<Transaction>(null as any);
     }
 
     /**
      * @return OK
      */
-    transactionsGET2(id: string): Promise<void> {
+    transactionsGET(id: string): Promise<Transaction> {
         let url_ = this.baseUrl + "/api/Transactions/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -582,34 +651,38 @@ export class ApiClient implements IApiClient {
         let options_: RequestInit = {
             method: "GET",
             headers: {
+                "Accept": "application/json"
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processTransactionsGET2(_response);
+            return this.processTransactionsGET(_response);
         });
     }
 
-    protected processTransactionsGET2(response: Response): Promise<void> {
+    protected processTransactionsGET(response: Response): Promise<Transaction> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Transaction.fromJS(resultData200);
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<Transaction>(null as any);
     }
 
     /**
      * @param body (optional) 
      * @return OK
      */
-    transactionsPUT(id: string, body: Transaction | undefined): Promise<void> {
+    transactionsPUT(id: string, body: Transaction | undefined): Promise<Transaction> {
         let url_ = this.baseUrl + "/api/Transactions/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -623,6 +696,7 @@ export class ApiClient implements IApiClient {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             }
         };
 
@@ -631,25 +705,28 @@ export class ApiClient implements IApiClient {
         });
     }
 
-    protected processTransactionsPUT(response: Response): Promise<void> {
+    protected processTransactionsPUT(response: Response): Promise<Transaction> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = Transaction.fromJS(resultData200);
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<Transaction>(null as any);
     }
 
     /**
      * @return OK
      */
-    transactionsDELETE(id: string): Promise<void> {
+    transactionsDELETE(id: string): Promise<string> {
         let url_ = this.baseUrl + "/api/Transactions/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -659,6 +736,7 @@ export class ApiClient implements IApiClient {
         let options_: RequestInit = {
             method: "DELETE",
             headers: {
+                "Accept": "application/json"
             }
         };
 
@@ -667,59 +745,74 @@ export class ApiClient implements IApiClient {
         });
     }
 
-    protected processTransactionsDELETE(response: Response): Promise<void> {
+    protected processTransactionsDELETE(response: Response): Promise<string> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null as any;
+    
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<string>(null as any);
     }
 
     /**
      * @return OK
      */
-    usersGET(): Promise<void> {
+    usersAll(): Promise<User[]> {
         let url_ = this.baseUrl + "/api/Users";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
             headers: {
+                "Accept": "application/json"
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUsersGET(_response);
+            return this.processUsersAll(_response);
         });
     }
 
-    protected processUsersGET(response: Response): Promise<void> {
+    protected processUsersAll(response: Response): Promise<User[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(User.fromJS(item));
+            }
+            else {
+                result200 = null as any;
+            }
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<User[]>(null as any);
     }
 
     /**
      * @param body (optional) 
      * @return OK
      */
-    usersPOST(body: User | undefined): Promise<void> {
+    usersPOST(body: User | undefined): Promise<User> {
         let url_ = this.baseUrl + "/api/Users";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -730,6 +823,7 @@ export class ApiClient implements IApiClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             }
         };
 
@@ -738,25 +832,28 @@ export class ApiClient implements IApiClient {
         });
     }
 
-    protected processUsersPOST(response: Response): Promise<void> {
+    protected processUsersPOST(response: Response): Promise<User> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = User.fromJS(resultData200);
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<User>(null as any);
     }
 
     /**
      * @return OK
      */
-    usersGET2(id: string): Promise<void> {
+    usersGET(id: string): Promise<User> {
         let url_ = this.baseUrl + "/api/Users/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -766,34 +863,38 @@ export class ApiClient implements IApiClient {
         let options_: RequestInit = {
             method: "GET",
             headers: {
+                "Accept": "application/json"
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUsersGET2(_response);
+            return this.processUsersGET(_response);
         });
     }
 
-    protected processUsersGET2(response: Response): Promise<void> {
+    protected processUsersGET(response: Response): Promise<User> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = User.fromJS(resultData200);
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<User>(null as any);
     }
 
     /**
      * @param body (optional) 
      * @return OK
      */
-    usersPUT(id: string, body: User | undefined): Promise<void> {
+    usersPUT(id: string, body: User | undefined): Promise<User> {
         let url_ = this.baseUrl + "/api/Users/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -807,6 +908,7 @@ export class ApiClient implements IApiClient {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             }
         };
 
@@ -815,25 +917,28 @@ export class ApiClient implements IApiClient {
         });
     }
 
-    protected processUsersPUT(response: Response): Promise<void> {
+    protected processUsersPUT(response: Response): Promise<User> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = User.fromJS(resultData200);
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<User>(null as any);
     }
 
     /**
      * @return OK
      */
-    usersDELETE(id: string): Promise<void> {
+    usersDELETE(id: string): Promise<string> {
         let url_ = this.baseUrl + "/api/Users/{id}";
         if (id === undefined || id === null)
             throw new globalThis.Error("The parameter 'id' must be defined.");
@@ -843,6 +948,7 @@ export class ApiClient implements IApiClient {
         let options_: RequestInit = {
             method: "DELETE",
             headers: {
+                "Accept": "application/json"
             }
         };
 
@@ -851,19 +957,23 @@ export class ApiClient implements IApiClient {
         });
     }
 
-    protected processUsersDELETE(response: Response): Promise<void> {
+    protected processUsersDELETE(response: Response): Promise<string> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : null as any;
+    
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<string>(null as any);
     }
 }
 
@@ -1116,6 +1226,4 @@ function throwException(message: string, status: number, response: string, heade
         throw result;
     else
         throw new ApiException(message, status, response, headers, null);
-}
-
 }

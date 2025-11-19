@@ -3,7 +3,7 @@ import ThemeToggle from "./ThemeToggle";
 import './App.css'
 import {Board} from "./Board.tsx";
 import {Purchase} from "./Purchase.tsx";
-
+import Users from './api/Users.tsx';
 
 const myRoutes : RouteObject[] =[
     {
@@ -27,8 +27,8 @@ const myRoutes : RouteObject[] =[
 
 function Home() {
 
-    const navigate = useNavigate()
 
+    const navigate = useNavigate()
     return (
         <>
             <div className="navbar bg-base-100 shadow-sm">
@@ -70,100 +70,8 @@ function Home() {
                     <ThemeToggle /> {}
                 </div>
             </div>
-            <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
-                <table className="table">
-                    {/* head */}
-                    <thead>
-                    <tr>
-                        <th></th>
-                        <th>Book</th>
-                        <th>Purchase</th>
-                        <th>Genre</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    {/* row 1 */}
-                    <tr className="hover:bg-base-300">
-                        <th>1</th>
-                        <td>The Silent River</td>
-                        <td>John Smith</td>
-                        <td>Drama</td>
-                    </tr>
-
-                    {/* row 2 */}
-                    <tr className="hover:bg-base-300">
-                        <th>2</th>
-                        <td>Echoes of Time</td>
-                        <td>Emily Carter</td>
-                        <td>Fantasy</td>
-                    </tr>
-
-                    {/* row 3 */}
-                    <tr className="hover:bg-base-300">
-                        <th>3</th>
-                        <td>Crimson Sky</td>
-                        <td>Noah Davis</td>
-                        <td>Adventure</td>
-                    </tr>
-
-                    {/* row 4 */}
-                    <tr className="hover:bg-base-300">
-                        <th>4</th>
-                        <td>Golden Shadows</td>
-                        <td>Olivia Wilson</td>
-                        <td>Mystery</td>
-                    </tr>
-
-                    {/* row 5 */}
-                    <tr className="hover:bg-base-300">
-                        <th>5</th>
-                        <td>Hidden Storm</td>
-                        <td>Ethan Taylor</td>
-                        <td>Thriller</td>
-                    </tr>
-
-                    {/* row 6 */}
-                    <tr className="hover:bg-base-300">
-                        <th>6</th>
-                        <td>Whispers in the Dark</td>
-                        <td>Ava Miller</td>
-                        <td>Horror</td>
-                    </tr>
-
-                    {/* row 7 */}
-                    <tr className="hover:bg-base-300">
-                        <th>7</th>
-                        <td>Beyond the Edge</td>
-                        <td>Sophia Brown</td>
-                        <td>Science Fiction</td>
-                    </tr>
-
-                    {/* row 8 */}
-                    <tr className="hover:bg-base-300">
-                        <th>8</th>
-                        <td>The Final Chapter</td>
-                        <td>Lucas Moore</td>
-                        <td>Detective</td>
-                    </tr>
-
-                    {/* row 9 */}
-                    <tr className="hover:bg-base-300">
-                        <th>9</th>
-                        <td>Broken Reflections</td>
-                        <td>Mia Anderson</td>
-                        <td>Romance</td>
-                    </tr>
-
-                    {/* row 10 */}
-                    <tr className="hover:bg-base-300">
-                        <th>10</th>
-                        <td>The Forgotten Path</td>
-                        <td>Liam Johnson</td>
-                        <td>Adventure</td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div>
+            <Users />
             </div>
         </>
     );
