@@ -7,11 +7,11 @@ namespace api.Entity;
 
 [ApiController]
 [Route("api/[controller]")]
-public class Transactions : ControllerBase
+public class TransactionsController : ControllerBase
 {
     private readonly MyDbContext _context;
 
-    public Transactions(MyDbContext context)
+    public TransactionsController(MyDbContext context)
     {
         _context = context;
     }
@@ -20,35 +20,33 @@ public class Transactions : ControllerBase
     // GET: /api/transactions
     // ----------------------
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<ActionResult<List<Transaction>>> GetAll()
     {
-        var transactions = await _context.Transactions.ToListAsync();
-        return Ok(transactions);
+        return await _context.Transactions.ToListAsync();
     }
 
     // ----------------------
     // GET: /api/transactions/{id}
     // ----------------------
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(string id)
+    public async Task<ActionResult<Transaction>> GetById(string id)
     {
         var transaction = await _context.Transactions.FindAsync(id);
         if (transaction == null)
-            return NotFound($"Transaction with id {id} not found.");
-        return Ok(transaction);
+            return NotFound();
+
+        return transaction;
     }
 
     // ----------------------
     // POST: /api/transactions
     // ----------------------
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Transaction transaction)
+    public async Task<ActionResult<Transaction>> Create(Transaction transaction)
     {
-        if (transaction == null)
-            return BadRequest("Transaction is null.");
-
         _context.Transactions.Add(transaction);
         await _context.SaveChangesAsync();
+
         return CreatedAtAction(nameof(GetById), new { id = transaction.Id }, transaction);
     }
 
@@ -56,39 +54,38 @@ public class Transactions : ControllerBase
     // PUT: /api/transactions/{id}
     // ----------------------
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(string id, [FromBody] Transaction transaction)
+    public async Task<ActionResult<Transaction>> Update(string id, Transaction transaction)
     {
         if (id != transaction.Id)
-            return BadRequest("Id mismatch.");
+            return BadRequest("ID mismatch.");
 
         var existingTransaction = await _context.Transactions.FindAsync(id);
         if (existingTransaction == null)
-            return NotFound($"Transaction with id {id} not found.");
+            return NotFound();
 
-        // updating fields
-        existingTransaction.Id = transaction.Id;
         existingTransaction.Username = transaction.Username;
         existingTransaction.Transactionid = transaction.Transactionid;
         existingTransaction.Status = transaction.Status;
         existingTransaction.Balance = transaction.Balance;
-        
-        _context.Transactions.Update(existingTransaction);
+
         await _context.SaveChangesAsync();
-        return Ok(existingTransaction);
+
+        return existingTransaction;
     }
 
     // ----------------------
     // DELETE: /api/transactions/{id}
     // ----------------------
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(string id)
+    public async Task<ActionResult<string>> Delete(string id)
     {
         var transaction = await _context.Transactions.FindAsync(id);
         if (transaction == null)
-            return NotFound($"Transaction with id {id} not found.");
+            return NotFound();
 
         _context.Transactions.Remove(transaction);
         await _context.SaveChangesAsync();
-        return Ok($"Transaction with id {id} deleted successfully.");
+
+        return id;
     }
 }
