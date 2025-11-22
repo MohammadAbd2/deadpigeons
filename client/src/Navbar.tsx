@@ -32,16 +32,18 @@ export default function Navbar({ title }: NavbarProps) {
                     <ul tabIndex={0}
                         className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
                         <li><a onClick={() => navigate('/')}>Homepage</a></li>
-                        <li><a onClick={() => navigate('/board')}>Board</a></li>
+                        <li><a onClick={() => navigate('/userBoard')}>Board</a></li>
+                        <li><a onClick={() => navigate('/adminBoard')}>Admin Board</a></li>
                         <li><a onClick={() => navigate('/purchase')}>Purchase</a></li>
                         <li><a onClick={() => navigate('/transactions')}>Transactions</a></li>
                     </ul>
                 </div>
 
-                <div className="logo ml-5">
+                <div className="logo ml-5 cursor-pointer">
                     <img src={logo}
                          alt="logo"
-                         style={{ width: '50px', height: '50px'}} />
+                         style={{ width: '50px', height: '50px'}}
+                         onClick={() => navigate('/')}   />
                 </div>
             </div>
 

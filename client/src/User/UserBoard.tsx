@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Navbar from "./Navbar";
+import Navbar from "../Navbar.tsx";
 
-export function Board() {
+export function UserBoard() {
 
     const [selected, setSelected] = useState<number[]>([]);
     const [showToast, setShowToast] = useState(false);
@@ -24,10 +24,8 @@ export function Board() {
 
     function toggle(n: number) {
         setSelected(prev => {
-            // إزالة الاختيار
             if (prev.includes(n)) return prev.filter(x => x !== n);
 
-            // منع اختيار أكثر من 8
             if (prev.length >= max) {
                 triggerToast();
                 return prev;
@@ -89,7 +87,7 @@ export function Board() {
                                 onClick={() => toggle(n)}
                                 className={
                                     "flex items-center justify-center border border-gray-400 " +
-                                    "w-24 h-24 text-xl leading-none box-border cursor-pointer rounded-xl " +
+                                    "w-18 h-18 text-xl leading-none box-border cursor-pointer rounded-xl " +
                                     (isSelected ? "bg-base-300 font-bold" : "bg-base-100 hover:bg-base-200")
                                 }
                             >
@@ -100,9 +98,9 @@ export function Board() {
                 </div>
             </div>
 
-            <div className="flex justify-center mt-5">
+            <div className="flex justify-center mt-7">
                 <button
-                    className="btn btn-primary btn-xl rounded-xl"
+                    className="btn btn-default btn-outline btn-xl rounded-xl"
                     disabled={!canSubmit}
                 >
                     Submit ({price} DKK)

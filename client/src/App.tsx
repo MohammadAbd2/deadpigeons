@@ -1,13 +1,14 @@
 import {createBrowserRouter, type RouteObject, RouterProvider, useNavigate} from "react-router-dom"
 import ThemeToggle from "./ThemeToggle";
 import './App.css'
-import {Board} from "./Board.tsx";
+import {UserBoard} from "./User/UserBoard.tsx";
 import {Purchase} from "./Purchase.tsx";
 import Users from './api/Users.tsx';
 import {Login} from "./Login.tsx";
 import Admins from "./api/Admins.tsx";
 import Transactions from "./api/Transactions.tsx";
 import AdminBoards from "./api/AdminBoards.tsx";
+import {AdminBoard} from "./Admin/AdminBoard.tsx";
 
 const myRoutes : RouteObject[] =[
     {
@@ -15,8 +16,12 @@ const myRoutes : RouteObject[] =[
         element: <Home/>
     },
     {
-        path: '/board',
-        element: <Board/>
+        path: '/userBoard',
+        element: <UserBoard/>
+    },
+    {
+        path: '/adminBoard',
+        element: <AdminBoard/>
     },
     {
         path: '/purchase',
@@ -55,7 +60,7 @@ function Home() {
                             }}>Homepage</a></li>
                             <li><a onClick={() => {
                                 navigate(
-                                    '/board'
+                                    '/userBoard'
                                 )
                             }}>Board</a></li>
                             <li><a onClick={() => {
