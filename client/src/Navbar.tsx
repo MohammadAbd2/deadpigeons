@@ -38,10 +38,11 @@ export default function Navbar({ title }: NavbarProps) {
                     </ul>
                 </div>
 
-                <div className="logo ml-5">
+                <div className="logo ml-5 cursor-pointer">
                     <img src={logo}
                          alt="logo"
-                         style={{ width: '50px', height: '50px'}} />
+                         style={{ width: '50px', height: '50px'}}
+                         onClick={() => navigate('/')}   />
                 </div>
             </div>
 
