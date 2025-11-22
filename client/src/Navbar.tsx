@@ -34,7 +34,7 @@ export default function Navbar({ title }: NavbarProps) {
                         <li><a onClick={() => navigate('/')}>Homepage</a></li>
                         <li><a onClick={() => navigate('/board')}>Board</a></li>
                         <li><a onClick={() => navigate('/purchase')}>Purchase</a></li>
-                        <li><a onClick={() => navigate('/genre')}>Genre</a></li>
+                        <li><a onClick={() => navigate('/transactions')}>Transactions</a></li>
                     </ul>
                 </div>
 
