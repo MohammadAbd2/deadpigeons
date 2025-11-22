@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Navbar from "./Navbar";
+import Navbar from "../Navbar.tsx";
 
-export function Board() {
+export function UserBoard() {
 
     const [selected, setSelected] = useState<number[]>([]);
     const [showToast, setShowToast] = useState(false);

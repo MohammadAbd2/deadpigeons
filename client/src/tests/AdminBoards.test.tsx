@@ -24,7 +24,7 @@ test("AdminBoards renders board data correctly", async () => {
     render(<AdminBoards />);
 
     await waitFor(() => {
-        expect(screen.getByText("Weekly Board")).toBeInTheDocument();
+        expect(screen.getByText("Weekly UserBoard")).toBeInTheDocument();
     });
 
     expect(screen.getByText("10")).toBeInTheDocument();
