@@ -7,6 +7,7 @@ import Users from './api/Users.tsx';
 import {Login} from "./Login.tsx";
 import Admins from "./api/Admins.tsx";
 import Transactions from "./api/Transactions.tsx";
+import {Transaction} from "./Admin/Transaction.tsx";
 import AdminBoards from "./api/AdminBoards.tsx";
 import {AdminBoard} from "./Admin/AdminBoard.tsx";
 
@@ -30,6 +31,10 @@ const myRoutes : RouteObject[] =[
     {
         path: '/transactions',
         element: <Transactions/>
+    },
+    {
+        path: '/transaction',
+        element: <Transaction/>
     },
     {
         path: '/Login',
