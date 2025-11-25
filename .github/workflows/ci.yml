@@ -28,7 +28,7 @@ jobs:
 
       - name: Install Client Dependencies
         working-directory: client
-        run: npm install
+        run: npm install | npm i jotai
 
       - name: Build Client
         working-directory: client
