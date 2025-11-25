@@ -11,8 +11,8 @@ import AdminBoards from "../api/AdminBoards.tsx";
 import {AdminBoard} from "./Admin/AdminBoard.tsx";
 import {Overview} from "./Admin/Overview.tsx";
 import Navbar from "./Navbar.tsx";
-import {UserHomePage} from "./UserHomePage.tsx";
-import {AdminHomePage} from "./AdminHomePage.tsx";
+import {UserHomePage} from "./User/UserHomePage.tsx";
+import {AdminHomePage} from "./Admin/AdminHomePage.tsx";
 
 const myRoutes : RouteObject[] =[
     {

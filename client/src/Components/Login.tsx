@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Navbar from "./Navbar.tsx";
 import { useAtom } from "jotai";
-import { roleAtom } from "./authAtoms";
+import { roleAtom } from "../authAtoms";
 
 export function Login() {
     const navigate = useNavigate();

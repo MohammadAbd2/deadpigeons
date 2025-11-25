@@ -1,5 +1,5 @@
-import Navbar from "./Navbar";
-import { UserBoard } from "./User/UserBoard";
+import Navbar from "../Navbar";
+import { UserBoard } from "./UserBoard";
 import { Purchase } from "./Purchase";
 
 export function UserHomePage() {

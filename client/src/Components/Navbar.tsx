@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import logo from "./assets/JerneIF-logo.png";
+import logo from "../assets/JerneIF-logo.png";
 import ThemeToggle from "./ThemeToggle";
 import { useAtom } from "jotai";
-import { roleAtom } from "./authAtoms";
+import { roleAtom } from "../authAtoms";
 
 type NavbarProps = {
     title: string;
@@ -34,12 +34,12 @@ export default function Navbar({ title }: NavbarProps) {
                     <ul className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
 
                         {/* Public */}
-                        <li><button onClick={() => navigate("/")}>Homepage</button></li>
+                        <li><button onClick={() => navigate("/")}>Home</button></li>
 
                         {/* USER NAVIGATION */}
                         {role === "user" && (
                             <>
-                                <li><button onClick={() => navigate("/userhome")}>User Home</button></li>
+                                <li><button onClick={() => navigate("/userhome")}>My Page</button></li>
                                 <li><button onClick={() => navigate("/userBoard")}>My Board</button></li>
                                 <li><button onClick={() => navigate("/purchase")}>Purchase</button></li>
                             </>
@@ -48,8 +48,8 @@ export default function Navbar({ title }: NavbarProps) {
                         {/* ADMIN NAVIGATION */}
                         {role === "admin" && (
                             <>
-                                <li><button onClick={() => navigate("/adminhome")}>Admin Home</button></li>
-                                <li><button onClick={() => navigate("/adminBoard")}>Admin Board</button></li>
+                                <li><button onClick={() => navigate("/adminhome")}>My Page</button></li>
+                                <li><button onClick={() => navigate("/adminBoard")}>Board</button></li>
                                 <li><button onClick={() => navigate("/transaction")}>All Transactions</button></li>
                                 <li><button onClick={() => navigate("/overview")}>Overview</button></li>
                             </>

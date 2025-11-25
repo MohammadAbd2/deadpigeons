@@ -1,9 +1,9 @@
-import Navbar from "./Navbar";
+import Navbar from "../Navbar";
 //import AdminBoards from "./api/AdminBoards";
-import {AdminBoard} from "./Admin/AdminBoard.tsx"
-import Transactions from "./api/Transactions";
-import { Overview } from "./Admin/Overview";
-import Users from "./api/Users.tsx";
+import {AdminBoard} from "./AdminBoard.tsx"
+import Transactions from "../../api/Transactions.tsx"
+import { Overview } from "./Overview";
+import Users from "../../api/Users.tsx";
 
 export function AdminHomePage() {
     return (
