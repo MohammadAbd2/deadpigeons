@@ -32,7 +32,7 @@ function Transactions() {
                     <tr>
                         <th>ID</th>
                         <th>Username</th>
-                        <th>TransacionID</th>
+                        <th>TransactionID</th>
                         <th>Status</th>
                         <th>Balance</th>
                     </tr>
