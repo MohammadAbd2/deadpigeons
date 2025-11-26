@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Navbar from "../Navbar.tsx";
+import Navbar from "../Navbar";
 
 type PlayerOverview = {
     id: number;

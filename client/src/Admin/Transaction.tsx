@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Navbar from "../Navbar.tsx";
+import Navbar from "../Navbar";
 
 type TransactionType = {
     id: number;
