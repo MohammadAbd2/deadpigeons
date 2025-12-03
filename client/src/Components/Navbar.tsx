@@ -147,7 +147,7 @@ export default function Navbar({ title }: NavbarProps) {
                 {!isLoginPage && user && !isAdmin && (
                     <>
                         <div className="px-3 py-1 bg-base-200 rounded-lg shadow-sm">
-                            Balance: <span className="font-bold">{user.balance ?? 2290}</span>
+                            Balance: <span className="font-bold">{user.balance ?? 0}</span>
                         </div>
                         <Divider />
                     </>
@@ -157,12 +157,10 @@ export default function Navbar({ title }: NavbarProps) {
                 <div className="text-sm opacity-70">{currentTime}</div>
 
                 {/* Theme toggle (login page only) */}
-                {isLoginPage && (
                     <>
                         <Divider />
                         <ThemeToggle />
                     </>
-                )}
 
                 {/* Divider before logout */}
                 {!isLoginPage && <Divider />}
