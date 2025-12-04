@@ -6,6 +6,10 @@ export function UserBoard() {
     const [selected, setSelected] = useState<number[]>([]);
     const [showToast, setShowToast] = useState(false);
 
+    // NEW: repeating sequence states
+    const [repeat, setRepeat] = useState(false);
+    const [repeatWeeks, setRepeatWeeks] = useState(1);
+
     // -----------------------
     // PRICE TABLE
     // -----------------------
@@ -41,6 +45,8 @@ export function UserBoard() {
     }
 
     const price = getPrice(selected.length);
+
+    // Submit button should be enabled ONLY when 5–8 numbers chosen
     const canSubmit = selected.length >= min && selected.length <= max;
 
     return (
@@ -60,6 +66,13 @@ export function UserBoard() {
                 Week <span className="ml-2">43</span>
             </div>
 
+            {/* RENEWAL REMINDER */}
+            <div className="flex justify-center mb-3">
+                <div className="text-center text-base text-gray-700 bg-base-200 px-4 py-2 rounded-xl">
+                    Board renews every Saturday at 17:00 (Danish time)
+                </div>
+            </div>
+
             {/* INFO BOX */}
             <div className="flex justify-center mb-4">
                 <div className="p-4 rounded-xl bg-base-200 text-center">
@@ -75,6 +88,43 @@ export function UserBoard() {
                 </div>
             </div>
 
+            {/* REPEAT SEQUENCE OPTION */}
+            <div className="flex justify-center mb-5">
+                <div className="bg-base-200 p-4 rounded-xl w-[350px]">
+
+                    {/* Toggle */}
+                    <label className="flex items-center justify-between cursor-pointer">
+                        <span className="font-medium">Repeat this sequence weekly</span>
+                        <input
+                            type="checkbox"
+                            className="toggle"
+                            checked={repeat}
+                            onChange={(e) => setRepeat(e.target.checked)}
+                        />
+                    </label>
+
+                    {/* Weeks selector (only visible when repeat = ON) */}
+                    {repeat && (
+                        <div className="mt-3 flex items-center justify-between">
+                            <span className="text-sm">Repeat for</span>
+
+                            <input
+                                type="number"
+                                className="input input-bordered input-sm w-24 text-center"
+                                value={repeatWeeks}
+                                onChange={(e) => {
+                                    const value = Number(e.target.value);
+                                    setRepeatWeeks(value < 1 ? 1 : value); // prevents negative
+                                }}
+                            />
+
+                            <span className="text-sm">weeks</span>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* NUMBER GRID */}
             <div className="flex justify-center">
                 <div className="grid grid-cols-4 gap-2">
                     {Array.from({ length: 16 }, (_, i) => {
@@ -98,9 +148,10 @@ export function UserBoard() {
                 </div>
             </div>
 
+            {/* SUBMIT BUTTON */}
             <div className="flex justify-center mt-7">
                 <button
-                    className="btn btn-default btn-outline btn-xl rounded-xl"
+                    className="btn btn-default btn-outline btn-xl rounded-xl mb-5"
                     disabled={!canSubmit}
                 >
                     Submit ({price} DKK)
