@@ -36,7 +36,6 @@ export default function Navbar({ title }: NavbarProps) {
         const interval = setInterval(() => {
             setCurrentTime(new Date().toLocaleString());
         }, 1000);
-        console.log(user);
         return () => clearInterval(interval);
     }, []);
 
@@ -70,7 +69,7 @@ export default function Navbar({ title }: NavbarProps) {
 
         return () => clearInterval(interval);
 
-    }, [user, setUser]);
+    }, []);
 
 
 
