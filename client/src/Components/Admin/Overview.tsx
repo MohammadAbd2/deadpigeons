@@ -1,92 +1,30 @@
 import { useEffect, useState } from "react";
-import Navbar from "../Navbar.tsx";
-
+import Navbar from "../Navbar";
+import { User } from "../../api/apiClient.ts";
+import { Board } from "../../api/apiClient.ts";
+import {ApiClient} from "../../api/apiClient.ts"; // adjust to your structure
+import {finalUrl} from "../../baseUrl.ts";
+// --- TYPES USED JUST FOR UI ---
 type PlayerOverview = {
-    id: number;
-    name: string;
-    email: string;
-    phone: string;
-    active: boolean;
-    boards: {
-        boardId: number;
-        weekNumber: number;
-        numbers: number[];
-        isWinner: boolean;
-    }[];
+    user: User;
+    boardCount: number;
+    winningBoards: number;
 };
 
-type GameOverview = {
-    weekNumber: number;
-    winningNumbers: number[];
-    totalWinningBoards: number;
-    isOpen: boolean;
-};
-
-
-/// These are mock functions, Replace with real API call later
-function mockFetchPlayers(): Promise<PlayerOverview[]> {
-    return Promise.resolve([
-        {
-            id: 1,
-            name: "John Torp",
-            email: "john@example.com",
-            phone: "12345678",
-            active: true,
-            boards: [
-                { boardId: 11, weekNumber: 7, numbers: [4, 5, 12, 14], isWinner: false },
-                { boardId: 12, weekNumber: 7, numbers: [1, 3, 7, 8, 16], isWinner: true },
-            ]
-        },
-        {
-            id: 2,
-            name: "María Hansen",
-            email: "maria@example.com",
-            phone: "87654321",
-            active: true,
-            boards: [
-                { boardId: 22, weekNumber: 7, numbers: [3, 5, 1, 7, 9], isWinner: true }
-            ]
-        },
-        {
-            id: 3,
-            name: "Ole Refstrup",
-            email: "ole@example.com",
-            phone: "11111111",
-            active: false,
-            boards: []
-        }
-    ]);
-}
-
-function mockFetchGames(): Promise<GameOverview[]> {
-    return Promise.resolve([
-        {
-            weekNumber: 7,
-            winningNumbers: [1, 3, 7],
-            totalWinningBoards: 2,
-            isOpen: false
-        },
-        {
-            weekNumber: 8,
-            winningNumbers: [],
-            totalWinningBoards: 0,
-            isOpen: true
-        }
-    ]);
-}
-
-// Page Component
 export function Overview() {
-    const [players, setPlayers] = useState<PlayerOverview[]>([]);
-    const [games, setGames] = useState<GameOverview[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
+    const [boards, setBoards] = useState<Board[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        Promise.all([mockFetchPlayers(), mockFetchGames()]).then(([p, g]) => {
-            setPlayers(p);
-            setGames(g);
-            setLoading(false);
-        });
+        const client = new ApiClient(finalUrl);
+
+        Promise.all([client.usersAll(), client.boardsAll()])
+            .then(([u, b]) => {
+                setUsers(u);
+                setBoards(b);
+            })
+            .finally(() => setLoading(false));
     }, []);
 
     if (loading) {
@@ -100,13 +38,43 @@ export function Overview() {
         );
     }
 
+    // ---- DERIVED UI DATA ----
+
+    // Group boards by week for Game History
+    const gameHistory = boards
+        .map((b) => ({
+            weekNumber: b.weeknumber ? new Date(b.weeknumber).toLocaleTimeString() : "?",
+            winningNumbers: b.winningnumbers
+                ? b.winningnumbers.split(",").map((n) => Number(n.trim()))
+                : [],
+            totalWinningBoards: b.totalwinners ?? 0,
+            isOpen: b.isopen ?? false,
+        }))
+        .sort((a, b) => Number(b.weekNumber) - Number(a.weekNumber));
+
+    // For each user, count boards + count winners
+    const userOverview: PlayerOverview[] = users.map((u) => {
+        const boardsByUser = boards.filter((b) =>
+            b.winningusers?.toLowerCase().includes(u.name?.toLowerCase() ?? "")
+        );
+
+        const winningBoards = boardsByUser.filter((b) => b.totalwinners && b.totalwinners > 0).length;
+
+        return {
+            user: u,
+            boardCount: boardsByUser.length,
+            winningBoards,
+        };
+    });
+
     return (
         <>
             <Navbar title="Overview" />
 
-            {/* Game History Section */}
+            {/* --- GAME HISTORY SECTION --- */}
             <div className="m-5 p-5 rounded-xl bg-base-200">
                 <h2 className="text-2xl font-bold mb-4 text-center">Game History</h2>
+
                 <div className="overflow-x-auto">
                     <table className="table">
                         <thead>
@@ -118,8 +86,8 @@ export function Overview() {
                         </tr>
                         </thead>
                         <tbody>
-                        {games.map((g) => (
-                            <tr key={g.weekNumber} className="hover:bg-base-300">
+                        {gameHistory.map((g, idx) => (
+                            <tr key={idx} className="hover:bg-base-300">
                                 <td>{g.weekNumber}</td>
                                 <td>
                                     {g.winningNumbers.length > 0
@@ -135,9 +103,10 @@ export function Overview() {
                 </div>
             </div>
 
-            {/* Player Overview Section */}
+            {/* --- PLAYER PARTICIPATION SECTION --- */}
             <div className="m-5 p-5 rounded-xl bg-base-200">
                 <h2 className="text-2xl font-bold mb-4 text-center">Player Participation Overview</h2>
+
 
                 <div className="overflow-x-auto">
                     <table className="table">
@@ -152,65 +121,71 @@ export function Overview() {
                         </tr>
                         </thead>
                         <tbody>
-                        {players.map((p) => {
-                            const winningBoards = p.boards.filter(b => b.isWinner).length;
-
-                            return (
-                                <tr key={p.id} className="hover:bg-base-300">
-                                    <td>{p.name}</td>
-                                    <td>{p.email}</td>
-                                    <td>{p.phone}</td>
-                                    <td>{p.active ? "active" : "inactive"}</td>
-                                    <td>{p.boards.length}</td>
-                                    <td>{winningBoards}</td>
-                                </tr>
-                            );
-                        })}
+                        {userOverview.map((p) => (
+                            <tr key={p.user.id} className="hover:bg-base-300">
+                                <td>{p.user.name}</td>
+                                <td>{p.user.email}</td>
+                                <td>{p.user.phone}</td>
+                                <td>{p.user.isactive ? "active" : "inactive"}</td>
+                                <td>{p.boardCount}</td>
+                                <td>{p.winningBoards}</td>
+                            </tr>
+                        ))}
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            {/* Per Player Board Details Section */}
+            {/* --- BOARDS PER PLAYER SECTION --- */}
             <div className="m-5 mt-10">
                 <h2 className="text-2xl font-bold mb-4 text-center">Boards Per Player</h2>
 
-                {players.map((p) => (
-                    <div key={p.id} className="mb-8 p-5 bg-base-200 rounded-xl">
-                        <h3 className="text-xl font-semibold mb-2">
-                            {p.name} — {p.boards.length} board(s)
-                        </h3>
+                {users.map((u) => {
+                    const boardsByUser = boards.filter((b) =>
+                        b.winningusers?.toLowerCase().includes(u.name?.toLowerCase() ?? "")
+                    );
 
-                        {p.boards.length === 0 && (
-                            <p className="text-sm opacity-70">No boards this week.</p>
-                        )}
+                    return (
+                        <div key={u.id} className="mb-8 p-5 bg-base-200 rounded-xl">
+                            <h3 className="text-xl font-semibold mb-2">
+                                {u.name} — {boardsByUser.length} board(s)
+                            </h3>
 
-                        {p.boards.length > 0 && (
-                            <div className="overflow-x-auto">
-                                <table className="table">
-                                    <thead>
-                                    <tr>
-                                        <th>Board ID</th>
-                                        <th>Week</th>
-                                        <th>Numbers</th>
-                                        <th>Winner?</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {p.boards.map((b) => (
-                                        <tr key={b.boardId} className="hover:bg-base-300">
-                                            <td>{b.boardId}</td>
-                                            <td>{b.weekNumber}</td>
-                                            <td>{b.numbers.join(", ")}</td>
-                                            <td>{b.isWinner ? "YES" : "NO"}</td>
+                            {boardsByUser.length === 0 && (
+                                <p className="text-sm opacity-70">No boards this week.</p>
+                            )}
+
+                            {boardsByUser.length > 0 && (
+                                <div className="overflow-x-auto">
+                                    <table className="table">
+                                        <thead>
+                                        <tr>
+                                            <th>Board ID</th>
+                                            <th>Week</th>
+                                            <th>Winning Numbers</th>
+                                            <th>Winner?</th>
                                         </tr>
-                                    ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
-                    </div>
-                ))}
+                                        </thead>
+                                        <tbody>
+                                        {boardsByUser.map((b) => (
+                                            <tr key={b.id} className="hover:bg-base-300">
+                                                <td>{b.id}</td>
+                                                <td>
+                                                    {b.weeknumber
+                                                        ? new Date(b.weeknumber).toLocaleTimeString()
+                                                        : "-"}
+                                                </td>
+                                                <td>{b.winningnumbers || "-"}</td>
+                                                <td>{b.totalwinners && b.totalwinners > 0 ? "YES" : "NO"}</td>
+                                            </tr>
+                                        ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
             </div>
         </>
     );
