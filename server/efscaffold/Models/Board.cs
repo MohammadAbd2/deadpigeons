@@ -14,6 +14,9 @@ public partial class Board
     [Column("weeknumber")]
     public int Weeknumber { get; set; }
 
+    [Column("weekrepeat")]
+    public int? Weekrepeat { get; set; }
+
     [Column("totalwinners")]
     public int Totalwinners { get; set; }
 
