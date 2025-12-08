@@ -68,6 +68,7 @@ public class BoardsController : ControllerBase
         // update fields
         existingBoard.Name = board.Name;
         existingBoard.Weeknumber = board.Weeknumber;
+        existingBoard.Weekrepeat = board.Weekrepeat;
         existingBoard.Totalwinners = board.Totalwinners;
         existingBoard.Winningnumbers = board.Winningnumbers;
         existingBoard.Winningusers = board.Winningusers;

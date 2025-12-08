@@ -22,7 +22,8 @@ CREATE TABLE deadpigeons.Boards
 (
     id             text PRIMARY KEY NOT NULL,
     name           text NOT NULL,
-    weekNumber     int NOT NULL,              
+    weekNumber     int NOT NULL,
+    weekRepeat     int,
     totalWinners   int NOT NULL,
     winningNumbers text NOT NULL,
     winningUsers   text NOT NULL,
