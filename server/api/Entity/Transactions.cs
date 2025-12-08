@@ -68,9 +68,11 @@ public class Transactions : ControllerBase
         // updating fields
         existingTransaction.Id = transaction.Id;
         existingTransaction.Username = transaction.Username;
+        existingTransaction.UserId = transaction.UserId;
         existingTransaction.Transactionid = transaction.Transactionid;
         existingTransaction.Status = transaction.Status;
         existingTransaction.Balance = transaction.Balance;
+        existingTransaction.TransactionDate = transaction.TransactionDate;
         
         _context.Transactions.Update(existingTransaction);
         await _context.SaveChangesAsync();

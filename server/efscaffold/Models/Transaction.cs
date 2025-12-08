@@ -15,7 +15,10 @@ public partial class Transaction
 
     [Column("username")]
     public string Username { get; set; } = null!;
-
+    
+    [Column("userId")]
+    public int UserId { get; set; }
+    
     [Column("transactionid")]
     public string Transactionid { get; set; } = null!;
 
@@ -24,4 +27,7 @@ public partial class Transaction
 
     [Column("balance")]
     public int Balance { get; set; }
+    
+    [Column("TransactionDate")]
+    public DateTime TransactionDate { get; set; }
 }

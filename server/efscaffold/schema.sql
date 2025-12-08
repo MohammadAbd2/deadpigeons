@@ -48,7 +48,9 @@ CREATE TABLE deadpigeons.Transactions
 (
     id             text PRIMARY KEY NOT NULL,
     username       text NOT NULL,
+    userId         text NOT NULL,
     transactionId  text NOT NULL,
     status         int NOT NULL,
-    balance        int NOT NULL
+    balance        int NOT NULL,
+    transactionDate timestamp NOT NULL
 );
