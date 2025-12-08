@@ -137,7 +137,7 @@ export function UserGameHistory() {
                                     className={
                                         g.isWinner
                                             ? "border text-green-500 font-bold"
-                                            : "border text-red-500"
+                                            : "border 500"
                                     }
                                 >
                                     {g.isWinner ? "Winner" : "Not a Winner"}
