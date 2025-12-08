@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace efscaffold.Models;
 
@@ -15,10 +13,10 @@ public partial class Transaction
 
     [Column("username")]
     public string Username { get; set; } = null!;
-    
-    [Column("userId")]
-    public int UserId { get; set; }
-    
+
+    [Column("userid")]
+    public string UserId { get; set; } = null!;
+
     [Column("transactionid")]
     public string Transactionid { get; set; } = null!;
 
@@ -27,7 +25,7 @@ public partial class Transaction
 
     [Column("balance")]
     public int Balance { get; set; }
-    
-    [Column("TransactionDate")]
+
+    [Column("transactiondate")]
     public DateTime TransactionDate { get; set; }
 }
