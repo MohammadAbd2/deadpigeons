@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import Navbar from "../../Components/Navbar.tsx";
 import { ApiClient, Transaction as ApiTransaction } from "../../api/apiClient.ts";
+import {finalUrl} from "../../baseUrl.ts";
 
-const api = new ApiClient("");
+const api = new ApiClient(finalUrl);
 
 // UI Model
 type TransactionType = {
