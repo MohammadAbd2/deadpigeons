@@ -84,11 +84,22 @@ public class Program
         
         
     }
+    
+    
 
     public static WebApplication BuildApp(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
         
+        // add efscaffold which is the project that contains DbContext
+        builder.Services.AddDbContext<MyDbContext>(options =>
+            options.UseNpgsql(
+                builder.Configuration.GetConnectionString("DefaultConnection"),
+                b => b.MigrationsAssembly("efscaffold")
+            )
+        );
+        
+        // add service
         builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
         ConfigureServices(builder.Services);
 
