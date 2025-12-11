@@ -31,14 +31,55 @@ CREATE TABLE deadpigeons.Users
 -- ======================
 CREATE TABLE deadpigeons.Boards
 (
+    id          text PRIMARY KEY NOT NULL,
+    isOpen      boolean NOT NULL,
+    weekNumber  int NOT NULL
+);
+
+-- ======================
+-- AdminBoard Table
+-- ======================
+CREATE TABLE deadpigeons.AdminBoard
+(
     id             text PRIMARY KEY NOT NULL,
-    name           text NOT NULL,
-    weekNumber     int NOT NULL,
-    weekRepeat     int,
+    boardId        text NOT NULL REFERENCES deadpigeons.Boards(id) ON DELETE CASCADE,
+    winningNumbers int[] NOT NULL
+);
+
+-- ======================
+-- UserBoard Table
+-- ======================
+CREATE TABLE deadpigeons.UserBoard
+(
+    id               text PRIMARY KEY NOT NULL,
+    boardId          text NOT NULL REFERENCES deadpigeons.Boards(id) ON DELETE CASCADE,
+    userId           text NOT NULL REFERENCES deadpigeons.Users(id) ON DELETE CASCADE,
+    guessingNumbers  int[] NOT NULL,
+    weekRepeat       int NOT NULL
+);
+
+-- ======================
+-- AdminBoardHistory Table
+-- ======================
+CREATE TABLE deadpigeons.AdminBoardHistory
+(
+    id             text PRIMARY KEY NOT NULL,
+    boardId        text NOT NULL REFERENCES deadpigeons.Boards(id) ON DELETE CASCADE,
     totalWinners   int NOT NULL,
-    winningNumbers text NOT NULL,
-    winningUsers   text NOT NULL,
-    isOpen         boolean NOT NULL
+    winningUsers   text[] NOT NULL,
+    date           timestamp NOT NULL
+);
+
+-- ======================
+-- UserBoardHistory Table
+-- ======================
+CREATE TABLE deadpigeons.UserBoardHistory
+(
+    id         text PRIMARY KEY NOT NULL,
+    userId     text NOT NULL REFERENCES deadpigeons.Users(id) ON DELETE CASCADE,
+    boardId    text NOT NULL REFERENCES deadpigeons.Boards(id) ON DELETE CASCADE,
+    isWinner   boolean NOT NULL,
+    playedAt   timestamp NOT NULL
 );
 
 -- ======================
@@ -46,23 +87,11 @@ CREATE TABLE deadpigeons.Boards
 -- ======================
 CREATE TABLE deadpigeons.Transactions
 (
-    id             text PRIMARY KEY NOT NULL,
-    username       text NOT NULL,
-    userId         text NOT NULL,
-    transactionId  text NOT NULL,
-    status         int NOT NULL,
-    balance        int NOT NULL,
+    id              text PRIMARY KEY NOT NULL,
+    username        text NOT NULL,
+    userId          text NOT NULL,
+    transactionId   text NOT NULL,
+    status          int NOT NULL,
+    balance         int NOT NULL,
     transactionDate timestamp NOT NULL
-);
-
--- ======================
--- BoardHistory Table
--- ======================
-CREATE TABLE deadpigeons.BoardHistory
-(
-    id        text PRIMARY KEY NOT NULL,
-    userId    text NOT NULL REFERENCES deadpigeons.Users(id),
-    boardId   text NOT NULL REFERENCES deadpigeons.Boards(id),
-    won       boolean NOT NULL,
-    playedAt  timestamp NOT NULL
 );

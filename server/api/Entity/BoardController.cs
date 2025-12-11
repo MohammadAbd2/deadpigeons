@@ -7,18 +7,16 @@ namespace api.Entity;
 
 [ApiController]
 [Route("api/[controller]")]
-public class BoardsController : ControllerBase
+public class BoardController : ControllerBase
 {
     private readonly MyDbContext _context;
 
-    public BoardsController(MyDbContext context)
+    public BoardController(MyDbContext context)
     {
         _context = context;
     }
 
-    // ----------------------
-    // GET: /api/boards
-    // ----------------------
+    // GET: /api/board
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -26,21 +24,18 @@ public class BoardsController : ControllerBase
         return Ok(boards);
     }
 
-    // ----------------------
-    // GET: /api/boards/{id}
-    // ----------------------
+    // GET: /api/board/{id}
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(string id)
     {
         var board = await _context.Boards.FindAsync(id);
         if (board == null)
             return NotFound($"Board with id {id} not found.");
+
         return Ok(board);
     }
 
-    // ----------------------
-    // POST: /api/boards
-    // ----------------------
+    // POST: /api/board
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Board board)
     {
@@ -49,39 +44,31 @@ public class BoardsController : ControllerBase
 
         _context.Boards.Add(board);
         await _context.SaveChangesAsync();
+
         return CreatedAtAction(nameof(GetById), new { id = board.Id }, board);
     }
 
-    // ----------------------
-    // PUT: /api/boards/{id}
-    // ----------------------
+    // PUT: /api/board/{id}
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(string id, [FromBody] Board board)
     {
         if (id != board.Id)
             return BadRequest("Id mismatch.");
 
-        var existingBoard = await _context.Boards.FindAsync(id);
-        if (existingBoard == null)
+        var existing = await _context.Boards.FindAsync(id);
+        if (existing == null)
             return NotFound($"Board with id {id} not found.");
 
-        // update fields
-        existingBoard.Name = board.Name;
-        existingBoard.Weeknumber = board.Weeknumber;
-        existingBoard.Weekrepeat = board.Weekrepeat;
-        existingBoard.Totalwinners = board.Totalwinners;
-        existingBoard.Winningnumbers = board.Winningnumbers;
-        existingBoard.Winningusers = board.Winningusers;
-        existingBoard.Isopen = board.Isopen;
+        existing.IsOpen = board.IsOpen;
+        existing.WeekNumber = board.WeekNumber;
 
-        _context.Boards.Update(existingBoard);
+        _context.Boards.Update(existing);
         await _context.SaveChangesAsync();
-        return Ok(existingBoard);
+
+        return Ok(existing);
     }
 
-    // ----------------------
-    // DELETE: /api/boards/{id}
-    // ----------------------
+    // DELETE: /api/board/{id}
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
     {
@@ -91,6 +78,7 @@ public class BoardsController : ControllerBase
 
         _context.Boards.Remove(board);
         await _context.SaveChangesAsync();
+
         return Ok($"Board with id {id} deleted successfully.");
     }
 }

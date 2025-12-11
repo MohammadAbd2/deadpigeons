@@ -4,8 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace efscaffold.Models
 {
-    [Table("boardhistory", Schema = "deadpigeons")]
-    public class BoardHistory
+    [Table("userboardhistory", Schema = "deadpigeons")]
+    public class UserBoardHistory
     {
         [Key]
         [Column("id")]
@@ -17,10 +17,10 @@ namespace efscaffold.Models
         [Column("boardid")]
         public string BoardId { get; set; } = null!;
 
-        [Column("won")]
-        public bool Won { get; set; }
+        [Column("iswinner")]
+        public bool IsWinner { get; set; }
 
-        [Column("playedat")]
-        public DateTime PlayedAt { get; set; }
+        [Column("date")]
+        public DateTime Date { get; set; }
     }
 }

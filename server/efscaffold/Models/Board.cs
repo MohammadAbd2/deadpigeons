@@ -8,24 +8,9 @@ public partial class Board
     [Column("id")]
     public string Id { get; set; } = null!;
 
-    [Column("name")]
-    public string Name { get; set; } = null!;
+    [Column("isopen")]
+    public bool IsOpen { get; set; }
 
     [Column("weeknumber")]
-    public int Weeknumber { get; set; }
-
-    [Column("weekrepeat")]
-    public int? Weekrepeat { get; set; }
-
-    [Column("totalwinners")]
-    public int Totalwinners { get; set; }
-
-    [Column("winningnumbers")]
-    public string Winningnumbers { get; set; } = null!;
-
-    [Column("winningusers")]
-    public string Winningusers { get; set; } = null!;
-
-    [Column("isopen")]
-    public bool Isopen { get; set; }
+    public int WeekNumber { get; set; }
 }
