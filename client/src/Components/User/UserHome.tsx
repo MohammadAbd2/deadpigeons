@@ -25,6 +25,7 @@ export function UserHome() {
                     role:  user.role,
                     phone: u.phone ?? user.phone,
                     balance: u.balance ?? user.balance ?? 0,
+                    isAcitve : u.isactive ?? false,
                 });
                 console.log(u);
             })
@@ -47,6 +48,7 @@ export function UserHome() {
             { id: 3, title: "Online Purchase", amount: -79.90, date: "2025-11-30" }
         ]
     };
+
 
 
 
@@ -89,9 +91,11 @@ export function UserHome() {
                             <h2 className="text-lg font-semibold mb-3">Account Status</h2>
                             <ul className="space-y-1 ">
                                 <li>• Phone nr : {
-                                    // @ts-expect-error test
+                                    // @ts-expect-error bypass typescript error msg
                                     user.phone}</li>
-                                <li>• Status: Active</li>
+                                <li>• Status: {
+                                    // @ts-expect-error bypass typescript error msg
+                                    user.isAcitve ? "Active" : "Not Active"}</li>
                                 <li>• Role: {userDTO.role}</li>
                             </ul>
                         </div>

@@ -7,6 +7,7 @@ export type User = {
     phone?: string;
     role: "user" | "admin";
     balance?: number;
+    isAcitve : boolean;
 } | null;
 
 // This atom will automatically persist in localStorage under the key "user"
