@@ -67,9 +67,7 @@ export default function Navbar({ title }: NavbarProps) {
         };
 
         fetchUser(); // Call fetchUser immediately
-        const interval = setInterval(fetchUser, 10000); // Refresh user data every 10 seconds
 
-        return () => clearInterval(interval);
 
     }, []);
 
