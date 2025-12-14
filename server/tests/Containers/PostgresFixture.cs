@@ -1,4 +1,5 @@
-﻿using DotNet.Testcontainers.Builders;
+﻿namespace tests.Containers;
+using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Configurations;
 using Microsoft.EntityFrameworkCore;

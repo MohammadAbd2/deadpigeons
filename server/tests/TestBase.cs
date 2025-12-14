@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using api;
 using api.services;
+using tests.Containers;
 using Xunit;
 
 public abstract class TestBase : IClassFixture<PostgresFixture>
@@ -14,6 +16,9 @@ public abstract class TestBase : IClassFixture<PostgresFixture>
 
         var services = new ServiceCollection();
         services.AddScoped<IPasswordService, PasswordService>();
+        services.AddScoped<IJwtService>(sp =>
+            new JwtService(new AppOptions { JWTSecret = "TEST_SECRET_1234567890123456" })
+        );
         services.AddSingleton(_fixture.DbContext);
 
         _services = services.BuildServiceProvider();

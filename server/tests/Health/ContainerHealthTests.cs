@@ -1,6 +1,10 @@
 ﻿using Xunit;
 using efscaffold.Models;
 using DotNet.Testcontainers.Containers;
+using tests.Containers;
+
+namespace tests.Health;
+
 
 public class ContainerHealthTests : IClassFixture<PostgresFixture>
 {
