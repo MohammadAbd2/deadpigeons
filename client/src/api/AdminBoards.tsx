@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getMergedBoards } from "../Components/Admin/boardService.tsx";
 import { type MergedBoard } from "../Components/Admin/models.tsx";
+import {GuessingNumberAnimation} from "../Components/User/GuessingNumberAnimation.tsx";
 
 function AdminBoards() {
     const [boards, setBoards] = useState<MergedBoard[]>([]);
@@ -29,7 +30,7 @@ function AdminBoards() {
                     <tr key={b.id}>
                         <td>{b.id}</td>
                         <td>{b.weekNumber}</td>
-                        <td>{b.winningNumbers.join(", ") || "-"}</td>
+                        <td>{<GuessingNumberAnimation guessingNumbers={b.winningNumbers} />}</td>
                         <td>{b.isOpen ? "Open" : "Closed"}</td>
                     </tr>
                 ))}

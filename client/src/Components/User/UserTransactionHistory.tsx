@@ -59,7 +59,7 @@ export default function UserTransactionHistory() {
 
         api.transactionsAll()
             .then((data: ApiTransaction[]) => {
-                // فلترة معاملات المستخدم الحالي
+                // filtering current user transactions
                 const userTx = data.filter((t) => t.userId === user.userID);
                 setTransactions(userTx.map(mapApiToUserTransaction));
             })

@@ -6,37 +6,46 @@ import AdminBoards from "../../api/AdminBoards.tsx";
 
 export function AdminHome() {
     return (
-        <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-            {/* Navbar at the top */}
-            <Navbar title="Home" />
+        <div className="min-h-screen bg-base-200">
+            {/* NAVBAR */}
+            <Navbar title="Admin Dashboard" />
 
-            {/* Main content area fills remaining height */}
-            <div style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 2fr", // First column is wider
-                gap: "20px",
-                flex: 1, // Fill the remaining height
-                padding: "20px",
-                overflowY: "auto" // Allow scrolling if content overflows
-            }}>
-                {/* First column: Admin Boards and Transactions */}
+            {/* PAGE CONTENT */}
+            <div className="p-6 flex flex-col gap-6">
 
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                    <Admins />
-                    <Users />
+                {/* TOP SECTION — ADMINS & USERS */}
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <div className="card bg-base-100 shadow-lg">
+                        <div className="card-body">
+                            <h2 className="card-title">Admins</h2>
+                            <Admins />
+                        </div>
+                    </div>
+
+                    <div className="card bg-base-100 shadow-lg">
+                        <div className="card-body">
+                            <h2 className="card-title">Users</h2>
+                            <Users />
+                        </div>
+                    </div>
                 </div>
-                {/* Second column: Users */}
-                <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                    <AdminBoards />
-                    <Transactions />
+
+                {/* BOARDS SECTION */}
+                <div className="card bg-base-100 shadow-lg">
+                    <div className="card-body">
+                        <h2 className="card-title">Boards</h2>
+                        <AdminBoards />
+                    </div>
                 </div>
 
-
-
-                {/* Third column: Admins */}
-                <div style={{ display: "flex", flexDirection: "column" }}>
-
+                {/* TRANSACTIONS SECTION */}
+                <div className="card bg-base-100 shadow-lg">
+                    <div className="card-body">
+                        <h2 className="card-title">Transactions</h2>
+                        <Transactions />
+                    </div>
                 </div>
+
             </div>
         </div>
     );

@@ -2,3 +2,18 @@
 @plugin "daisyui" {
     themes: retro --default, dim --prefersdark;
 }
+
+@keyframes numberPop {
+    0% {
+        transform: scale(0.6);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.animate-number-pop {
+    animation: numberPop 0.4s ease-out forwards;
+}

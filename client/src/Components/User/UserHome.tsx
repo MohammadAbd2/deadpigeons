@@ -32,7 +32,7 @@ export function UserHome() {
         }
 
 
-    }, []);
+    }, [setUser]);
 
 
     const userDTO = {
@@ -42,12 +42,8 @@ export function UserHome() {
         userID: user?.userID,
         phone : user?.phone,
         role: user?.role,
-        recentTransactions: [
-            { id: 1, title: "Coffee Shop", amount: -5.50, date: "2025-12-04" },
-            { id: 2, title: "Salary Payment", amount: 2200.00, date: "2025-12-01" },
-            { id: 3, title: "Online Purchase", amount: -79.90, date: "2025-11-30" }
-        ]
     };
+
 
 
 
@@ -101,28 +97,6 @@ export function UserHome() {
                         </div>
                     </div>
 
-                    {/* TRANSACTIONS PANEL */}
-                    <div className="border border-gray-700 dark:i-carbon-moon p-6 shadow-inner">
-                        <h2 className="text-xl font-semibold mb-4">Recent Transactions</h2>
-
-                        <div className="divide-y divide-gray-700">
-                            {userDTO.recentTransactions.map((t) => (
-                                <div
-                                    key={t.id}
-                                    className="py-3 flex justify-between "
-                                >
-                                    <div>
-                                        <p className="font-medium">{t.title}</p>
-                                        <p className="text-xs">{t.date}</p>
-                                    </div>
-
-                                    <span className={t.amount < 0 ? "text-red-400" : "text-green-400"}>
-                                        {t.amount < 0 ? "-" : "+"}${Math.abs(t.amount)}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
 
                 </div>
             </div>
