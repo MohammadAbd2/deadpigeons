@@ -1,4 +1,5 @@
 using api.services;
+using api.services.Dtos;
 using efscaffold;
 using efscaffold.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -45,20 +46,27 @@ public class UsersController : ControllerBase
     // POST: /api/users
     // ----------------------
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] User user)
+    public async Task<IActionResult> Create([FromBody] CreateUserDto dto)
     {
-        if (user == null)
-            return BadRequest("User is null.");
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
-        // ✅ Hash password before saving
-        if (!string.IsNullOrEmpty(user.Password))
-            user.Password = _passwordService.HashPassword(user.Password);
+        var user = new User
+        {
+            Id = Guid.NewGuid().ToString(),
+            Name = dto.Name,
+            Phone = dto.Phone,
+            Email = dto.Email,
+            Password = _passwordService.HashPassword(dto.Password),
+            Balance = dto.Balance,
+            Isactive = dto.Isactive
+        };
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
     }
-
+    
     // ----------------------
     // PUT: /api/users/{id}
     // ----------------------

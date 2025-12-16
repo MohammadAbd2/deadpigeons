@@ -25,7 +25,7 @@ function Transactions() {
         <>
 
             <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
-                <h1 className={"flex justify-center text-3xl m-5"}>Transaction</h1>
+                <h1 className={"flex justify-center text-3xl m-5"}>Transactions</h1>
                 <table className="table">
                     {/* head */}
                     <thead>

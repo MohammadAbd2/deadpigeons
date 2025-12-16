@@ -1,65 +1,102 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import Navbar from "../Navbar";
+import {finalUrl} from "../../baseUrl.ts";
+import {ApiClient, User} from "../../api/apiClient.ts";
 
+/**
 type UserType = {
-    id: number;
-    name: string;
-    phone: string;
-    email: string;
-    status: "active" | "inactive";
-    balance: number;
+    id?: string;
+    name?: string;
+    phone?: string;
+    email?: string;
+    password?: string;
+    balance?: number;
+    isactive?: boolean;
 };
 
+**/
+
 export function UserList() {
-    const [selected, setSelected] = useState<UserType | null>(null);
+    const [users, setUsers] = useState<User[]>([]);
+    const [selected, setSelected] = useState<User | null>(null);
     const [isAddMode, setIsAddMode] = useState(false);
 
     const [search, setSearch] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
 
-    const mockUsers: UserType[] = [
-        { id: 1, name: "John Smith", phone: "55512345", email: "john@mail.com", status: "active", balance: 100 },
-        { id: 2, name: "Emily Clark", phone: "22113355", email: "emily@mail.com", status: "inactive", balance: 0 },
-        { id: 3, name: "Adam Cole", phone: "88776644", email: "adam@mail.com", status: "active", balance: 55 },
-        { id: 4, name: "Maria Lopez", phone: "99887766", email: "maria@mail.com", status: "inactive", balance: 10 },
-    ];
+    useEffect(() => {
+        const client = new ApiClient(finalUrl);
+
+        client.usersAll()
+            .then((data) => setUsers(data))
+            .catch((err) => console.error("API error:", err));
+    }, []);
+
 
     // SEARCH + FILTER
-    const filteredUsers = mockUsers.filter((u) => {
+    const filteredUsers = users.filter((u) => {
         const matchesSearch =
-            u.id.toString().includes(search) ||
-            u.name.toLowerCase().includes(search.toLowerCase());
+            (u.id ?? "").toString().includes(search) ||
+            (u.name ?? "").toLowerCase().includes(search.toLowerCase());
 
         const matchesStatus =
-            filterStatus === "all" ? true : u.status === filterStatus;
+            filterStatus === "all"
+                ? true
+                : filterStatus === "active"
+                    ? u.isactive
+                    : !u.isactive;
 
         return matchesSearch && matchesStatus;
     });
 
     // RESET + ENTER ADD MODE
     function startAddMode() {
-        setSelected({
-            id: 0, // backend will generate, just placeholder
-            name: "",
-            phone: "",
-            email: "",
-            status: "inactive",
-            balance: 0,
-        });
+        setSelected(
+            new User({
+                name: "",
+                phone: "",
+                email: "",
+                balance: 0,
+                isactive: false,
+            })
+        );
         setIsAddMode(true);
     }
 
+
     // SAVE EDITED USER
     function handleSave() {
-        console.log("Saving:", selected);
-        alert("User saved! (Backend later)");
+        if (!selected?.id) return;
+
+        const client = new ApiClient(finalUrl);
+
+        client.usersPUT(selected.id, selected)
+            .then((updated) => {
+                setUsers(users.map(u => u.id === updated.id ? updated : u));
+                setSelected(updated);
+            })
+            .catch(console.error);
     }
+
 
     // ADD NEW USER
     function handleAdd() {
-        console.log("New user added:", selected);
-        alert("User added! (Backend later)");
-        setIsAddMode(false);
+        if (!selected) return;
+
+        if (!selected.password) {
+            alert("Password is required");
+            return;
+        }
+
+        const client = new ApiClient(finalUrl);
+
+        client.usersPOST(selected)
+            .then((created) => {
+                setUsers([...users, created]);
+                setSelected(null);
+                setIsAddMode(false);
+            })
+            .catch(console.error);
     }
 
     return (
@@ -96,10 +133,12 @@ export function UserList() {
                                 <input
                                     type="text"
                                     className="input input-bordered w-full text-lg"
-                                    value={selected.name}
-                                    onChange={(e) =>
-                                        setSelected({ ...selected, name: e.target.value })
-                                    }
+                                    value={selected.name ?? ""}
+                                    onChange={(e) => {
+                                        const u = new User(selected);
+                                        u.name = e.target.value;
+                                        setSelected(u);
+                                    }}
                                 />
                             </div>
 
@@ -108,10 +147,12 @@ export function UserList() {
                                 <input
                                     type="text"
                                     className="input input-bordered w-full text-lg"
-                                    value={selected.phone}
-                                    onChange={(e) =>
-                                        setSelected({ ...selected, phone: e.target.value })
-                                    }
+                                    value={selected.phone ?? ""}
+                                    onChange={(e) => {
+                                        const u = new User(selected);
+                                        u.phone = e.target.value;
+                                        setSelected(u);
+                                    }}
                                 />
                             </div>
 
@@ -120,20 +161,42 @@ export function UserList() {
                                 <input
                                     type="email"
                                     className="input input-bordered w-full text-lg"
-                                    value={selected.email}
-                                    onChange={(e) =>
-                                        setSelected({ ...selected, email: e.target.value })
-                                    }
+                                    value={selected.email ?? ""}
+                                    onChange={(e) => {
+                                        const u = new User(selected);
+                                        u.email = e.target.value;
+                                        setSelected(u);
+                                    }}
                                 />
                             </div>
+
+                            {isAddMode && (
+                                <div>
+                                    <label className="font-semibold">Password:</label>
+                                    <input
+                                        type="password"
+                                        className="input input-bordered w-full text-lg"
+                                        value={selected.password ?? ""}
+                                        onChange={(e) => {
+                                            const u = new User(selected);
+                                            u.password = e.target.value;
+                                            setSelected(u);
+                                        }}
+                                    />
+                                </div>
+                            )}
+
 
                             <div>
                                 <label className="font-semibold">Status:</label>
                                 <select
                                     className="select select-bordered w-full text-lg"
-                                    value={selected.status}
-                                    onChange={(e) =>
-                                        setSelected({ ...selected, status: e.target.value as never })
+                                    value={selected.isactive ? "active" : "inactive"}
+                                    onChange={(e) => {
+                                        const u = new User(selected);
+                                        u.isactive = e.target.value === "active";
+                                        setSelected(u);
+                                    }
                                     }
                                 >
                                     <option value="active">Active</option>
@@ -146,10 +209,12 @@ export function UserList() {
                                 <input
                                     type="number"
                                     className="input input-bordered w-full text-lg"
-                                    value={selected.balance}
-                                    onChange={(e) =>
-                                        setSelected({ ...selected, balance: Number(e.target.value) })
-                                    }
+                                    value={selected.balance ?? ""}
+                                    onChange={(e) => {
+                                        const u = new User(selected);
+                                        u.balance = Number(e.target.value);
+                                        setSelected(u);
+                                    }}
                                 />
                             </div>
 
@@ -218,7 +283,7 @@ export function UserList() {
                                 key={u.id}
                                 onClick={() => {
                                     setSelected(u);
-                                    setIsAddMode(false);
+                                    setIsAddMode(   false);
                                 }}
                                 className={`
                                         cursor-pointer border-l-4
@@ -231,7 +296,7 @@ export function UserList() {
                                 <td className="border border-base-content/20">{u.name}</td>
                                 <td className="border border-base-content/20">{u.phone}</td>
                                 <td className="border border-base-content/20">{u.email}</td>
-                                <td className="border border-base-content/20">{u.status}</td>
+                                <td className="border border-base-content/20">{u.isactive ? "Active" : "Inactive"}</td>
                                 <td className="border border-base-content/20">{u.balance}</td>
                             </tr>
                         ))}

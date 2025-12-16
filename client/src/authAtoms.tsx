@@ -5,12 +5,12 @@ export type User = {
     username: string;
     email: string;
     phone?: string;
-    role: "user" | "admin";
+    role: "User" | "Admin";
     balance?: number;
-    isAcitve : boolean;
+    isActive : boolean;
 } | null;
 
 // This atom will automatically persist in localStorage under the key "user"
-export const userAtom = atomWithStorage<User>("user", null);
+export const userAtom = atomWithStorage<User>("User", null);
 
 

@@ -14,7 +14,7 @@ function AdminBoards() {
 
     return (
         <div className="overflow-x-auto rounded-box border bg-base-100">
-            <h1 className="flex justify-center text-3xl m-5">Players Board</h1>
+            <h1 className="flex justify-center text-3xl m-5">Admin Board History</h1>
 
             <table className="table">
                 <thead>

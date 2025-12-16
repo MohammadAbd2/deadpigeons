@@ -25,7 +25,7 @@ export function UserHome() {
                     role:  user.role,
                     phone: u.phone ?? user.phone,
                     balance: u.balance ?? user.balance ?? 0,
-                    isAcitve : u.isactive ?? false,
+                    isActive : u.isactive ?? false,
                 });
                 console.log(u);
             })
