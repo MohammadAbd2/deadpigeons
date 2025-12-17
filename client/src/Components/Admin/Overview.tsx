@@ -3,6 +3,7 @@ import Navbar from "../../Components/Navbar.tsx";
 import { finalUrl } from "../../baseUrl";
 import { GuessingNumberAnimation } from "../GuessingNumberAnimation.tsx";
 import { Toast } from "../../utils/Toast.tsx";
+import { Pagination } from "../../utils/Pagination.tsx";
 
 type AdminBoard = {
     id: string;
@@ -198,7 +199,7 @@ export function Overview() {
                                 className="hover:bg-base-300 cursor-pointer"
                                 onClick={() => {
                                     setSelectedBoardId(b.id);
-                                    setPlayersPage(1); // reset players page when selecting a new board
+                                    setPlayersPage(1); // reset players page
                                 }}
                             >
                                 <td>{b.id}</td>
@@ -218,31 +219,7 @@ export function Overview() {
                 </div>
 
                 {/* Boards Pagination */}
-                <div className="flex justify-center mt-4 space-x-2">
-                    <button
-                        className="btn btn-sm btn-outline"
-                        disabled={boardsPage === 1}
-                        onClick={() => setBoardsPage((prev) => prev - 1)}
-                    >
-                        « Prev
-                    </button>
-                    {Array.from({ length: boardsTotalPages }, (_, i) => i + 1).map((page) => (
-                        <button
-                            key={page}
-                            className={`btn btn-sm ${boardsPage === page ? "btn-primary" : "btn-outline"}`}
-                            onClick={() => setBoardsPage(page)}
-                        >
-                            {page}
-                        </button>
-                    ))}
-                    <button
-                        className="btn btn-sm btn-outline"
-                        disabled={boardsPage === boardsTotalPages}
-                        onClick={() => setBoardsPage((prev) => prev + 1)}
-                    >
-                        Next »
-                    </button>
-                </div>
+                <Pagination currentPage={boardsPage} totalPages={boardsTotalPages} onPageChange={setBoardsPage} />
             </div>
 
             {/* Players for Board */}
@@ -321,31 +298,7 @@ export function Overview() {
                     </div>
 
                     {/* Players Pagination */}
-                    <div className="flex justify-center mt-4 space-x-2">
-                        <button
-                            className="btn btn-sm btn-outline"
-                            disabled={playersPage === 1}
-                            onClick={() => setPlayersPage((prev) => prev - 1)}
-                        >
-                            « Prev
-                        </button>
-                        {Array.from({ length: playersTotalPages }, (_, i) => i + 1).map((page) => (
-                            <button
-                                key={page}
-                                className={`btn btn-sm ${playersPage === page ? "btn-primary" : "btn-outline"}`}
-                                onClick={() => setPlayersPage(page)}
-                            >
-                                {page}
-                            </button>
-                        ))}
-                        <button
-                            className="btn btn-sm btn-outline"
-                            disabled={playersPage === playersTotalPages}
-                            onClick={() => setPlayersPage((prev) => prev + 1)}
-                        >
-                            Next »
-                        </button>
-                    </div>
+                    <Pagination currentPage={playersPage} totalPages={playersTotalPages} onPageChange={setPlayersPage} />
                 </div>
             )}
         </>
