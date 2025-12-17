@@ -1,4 +1,4 @@
 # DeadPigeons
-![img.png](img.png)
+![Admin Board](README assets/img.png)
 
 (PlaceHolder README)
