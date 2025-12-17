@@ -46,7 +46,14 @@ export function Overview() {
     const [users, setUsers] = useState<User[]>([]);
     const [selectedBoardId, setSelectedBoardId] = useState<string | null>(null);
     const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
-    const [filter, setFilter] = useState("");
+    const [searchText, setSearchText] = useState("");
+    type WinnerFilterType = "All" | "Winner" | "Loser" | "Unknown";
+    const [winnerFilter, setWinnerFilter] = useState<WinnerFilterType>("All");
+
+    // Pagination
+    const [boardsPage, setBoardsPage] = useState(1);
+    const [playersPage, setPlayersPage] = useState(1);
+    const itemsPerPage = 5;
 
     const showToast = (message: string, type: "success" | "error") => {
         setToast({ message, type });
@@ -80,7 +87,6 @@ export function Overview() {
                 const totalWinners = boardUserBoards.filter((ub: UserBoard) =>
                     ab.winningNumbers.every((n: number) => ub.guessingNumbers.includes(n))
                 ).length;
-
                 return { ...ab, totalWinners };
             });
 
@@ -125,25 +131,52 @@ export function Overview() {
         };
     });
 
+    // Boards pagination
+    const boardsTotalPages = Math.ceil(mergedBoards.length / itemsPerPage);
+    const boardsToDisplay = mergedBoards.slice((boardsPage - 1) * itemsPerPage, boardsPage * itemsPerPage);
+
     // Players for selected board
-    const selectedBoardPlayers = selectedBoardId
+    const selectedBoardPlayersAll = selectedBoardId
         ? userBoards
             .filter((ub: UserBoard) => ub.boardId === selectedBoardId)
-            .map((ub: UserBoard & { userName?: string; isWinner?: boolean }) => {
+            .map((ub: UserBoard & { userName?: string; winnerStatus?: WinnerFilterType }) => {
                 const user = users.find((u: User) => u.id === ub.userId);
                 const adminBoard = adminBoards.find((ab: AdminBoard) => ab.boardId === selectedBoardId);
                 const winningNumbers = adminBoard?.winningNumbers || [];
-                const isWinner = winningNumbers.every((n: number) => ub.guessingNumbers.includes(n));
-                return { ...ub, userName: user?.name || "Unknown", isWinner };
+                let winnerStatus: WinnerFilterType;
+                if (!winningNumbers.length) winnerStatus = "Unknown";
+                else winnerStatus = winningNumbers.every((n: number) => ub.guessingNumbers.includes(n))
+                    ? "Winner"
+                    : "Loser";
+                return { ...ub, userName: user?.name || "Unknown", winnerStatus };
             })
-            .filter((ub) => ub.userName!.toLowerCase().includes(filter.toLowerCase()))
         : [];
+
+    // Filtered by search and winner
+    const selectedBoardPlayers = selectedBoardPlayersAll
+        .filter(
+            (ub) =>
+                (ub.userName!.toLowerCase().includes(searchText.toLowerCase()) ||
+                    ub.userId.toLowerCase().includes(searchText.toLowerCase())) &&
+                (winnerFilter === "All" || ub.winnerStatus === winnerFilter)
+        );
+
+    // Players pagination
+    const playersTotalPages = Math.ceil(selectedBoardPlayers.length / itemsPerPage);
+    const playersToDisplay = selectedBoardPlayers.slice((playersPage - 1) * itemsPerPage, playersPage * itemsPerPage);
+
+    // Count for filter
+    const winnerCount = selectedBoardPlayersAll.filter((p) => p.winnerStatus === "Winner").length;
+    const loserCount = selectedBoardPlayersAll.filter((p) => p.winnerStatus === "Loser").length;
+    const unknownCount = selectedBoardPlayersAll.filter((p) => p.winnerStatus === "Unknown").length;
+    const totalCount = selectedBoardPlayersAll.length;
 
     return (
         <>
             <Navbar title="Overview" />
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
+            {/* Boards Overview */}
             <div className="m-5 p-5 rounded-xl bg-base-200">
                 <h2 className="text-2xl font-bold mb-4 text-center">Boards Overview</h2>
                 <div className="overflow-x-auto">
@@ -159,18 +192,23 @@ export function Overview() {
                         </tr>
                         </thead>
                         <tbody>
-                        {mergedBoards.map((b: MergedBoard) => (
+                        {boardsToDisplay.map((b: MergedBoard) => (
                             <tr
                                 key={b.id}
                                 className="hover:bg-base-300 cursor-pointer"
-                                onClick={() => setSelectedBoardId(b.id)}
+                                onClick={() => {
+                                    setSelectedBoardId(b.id);
+                                    setPlayersPage(1); // reset players page when selecting a new board
+                                }}
                             >
                                 <td>{b.id}</td>
                                 <td>{b.weekNumber}</td>
                                 <td>
                                     <GuessingNumberAnimation guessingNumbers={b.winningNumbers} />
                                 </td>
-                                <td>{b.status}</td>
+                                <td className={b.status === "Open" ? "text-success font-bold" : "text-error font-bold"}>
+                                    {b.status}
+                                </td>
                                 <td>{b.totalPlayers}</td>
                                 <td>{b.totalWinners}</td>
                             </tr>
@@ -178,63 +216,135 @@ export function Overview() {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Boards Pagination */}
+                <div className="flex justify-center mt-4 space-x-2">
+                    <button
+                        className="btn btn-sm btn-outline"
+                        disabled={boardsPage === 1}
+                        onClick={() => setBoardsPage((prev) => prev - 1)}
+                    >
+                        « Prev
+                    </button>
+                    {Array.from({ length: boardsTotalPages }, (_, i) => i + 1).map((page) => (
+                        <button
+                            key={page}
+                            className={`btn btn-sm ${boardsPage === page ? "btn-primary" : "btn-outline"}`}
+                            onClick={() => setBoardsPage(page)}
+                        >
+                            {page}
+                        </button>
+                    ))}
+                    <button
+                        className="btn btn-sm btn-outline"
+                        disabled={boardsPage === boardsTotalPages}
+                        onClick={() => setBoardsPage((prev) => prev + 1)}
+                    >
+                        Next »
+                    </button>
+                </div>
             </div>
 
+            {/* Players for Board */}
             {selectedBoardId && (
                 <div className="m-5 p-5 rounded-xl bg-base-100">
                     <h2 className="text-2xl font-bold mb-4 text-center">Players for Board {selectedBoardId}</h2>
 
-                    <input
-                        type="text"
-                        placeholder="Search by player name..."
-                        value={filter}
-                        onChange={(e) => setFilter(e.target.value)}
-                        className="input input-bordered w-full mb-4"
-                    />
+                    {/* Filter bar */}
+                    <div className="flex gap-2 mb-4 items-center">
+                        <input
+                            type="text"
+                            placeholder="Search by player name or ID..."
+                            value={searchText}
+                            onChange={(e) => setSearchText(e.target.value)}
+                            className="input input-bordered w-full"
+                        />
+
+                        <select
+                            className="select select-bordered"
+                            value={winnerFilter}
+                            onChange={(e) => setWinnerFilter(e.target.value as WinnerFilterType)}
+                        >
+                            <option value="All">All ({totalCount})</option>
+                            <option value="Winner">Winner ({winnerCount})</option>
+                            <option value="Loser">Loser ({loserCount})</option>
+                            <option value="Unknown">Unknown ({unknownCount})</option>
+                        </select>
+                    </div>
 
                     <div className="overflow-x-auto">
                         <table className="table table-zebra">
                             <thead>
                             <tr>
                                 <th>Player Name</th>
+                                <th>Player ID</th>
                                 <th>Selected Numbers</th>
                                 <th>Winning Numbers</th>
                                 <th>Winner?</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {selectedBoardPlayers.map((p) => (
+                            {playersToDisplay.map((p) => (
                                 <tr key={p.id}>
                                     <td>{p.userName}</td>
+                                    <td>{p.userId}</td>
                                     <td>
                                         <GuessingNumberAnimation guessingNumbers={p.guessingNumbers} />
                                     </td>
                                     <td>
                                         <GuessingNumberAnimation
                                             guessingNumbers={
-                                                adminBoards.find((ab: AdminBoard) => ab.boardId === p.boardId)?.winningNumbers || []
+                                                adminBoards.find((ab) => ab.boardId === p.boardId)?.winningNumbers || []
                                             }
                                         />
                                     </td>
                                     <td>
-                                        {adminBoards.find((ab: AdminBoard) => ab.boardId === p.boardId)?.winningNumbers.length
-                                            ? p.isWinner
-                                                ? <span className="badge badge-success">Winner</span>
-                                                : <span className="badge badge-ghost">Lost</span>
-                                            : "—"}
+                                        {p.winnerStatus === "Unknown" ? (
+                                            "?"
+                                        ) : p.winnerStatus === "Winner" ? (
+                                            <span className="badge badge-success">Winner</span>
+                                        ) : (
+                                            <span className="badge badge-ghost">Lost</span>
+                                        )}
                                     </td>
-
                                 </tr>
                             ))}
-                            {selectedBoardPlayers.length === 0 && (
+                            {playersToDisplay.length === 0 && (
                                 <tr>
-                                    <td colSpan={4} className="text-center opacity-70">
+                                    <td colSpan={5} className="text-center opacity-70">
                                         No players found.
                                     </td>
                                 </tr>
                             )}
                             </tbody>
                         </table>
+                    </div>
+
+                    {/* Players Pagination */}
+                    <div className="flex justify-center mt-4 space-x-2">
+                        <button
+                            className="btn btn-sm btn-outline"
+                            disabled={playersPage === 1}
+                            onClick={() => setPlayersPage((prev) => prev - 1)}
+                        >
+                            « Prev
+                        </button>
+                        {Array.from({ length: playersTotalPages }, (_, i) => i + 1).map((page) => (
+                            <button
+                                key={page}
+                                className={`btn btn-sm ${playersPage === page ? "btn-primary" : "btn-outline"}`}
+                                onClick={() => setPlayersPage(page)}
+                            >
+                                {page}
+                            </button>
+                        ))}
+                        <button
+                            className="btn btn-sm btn-outline"
+                            disabled={playersPage === playersTotalPages}
+                            onClick={() => setPlayersPage((prev) => prev + 1)}
+                        >
+                            Next »
+                        </button>
                     </div>
                 </div>
             )}
