@@ -50,7 +50,7 @@ public class AdminController : ControllerBase
         if (admin == null)
             return BadRequest("Admin is null.");
 
-        // ✅ Hash password before saving
+        // Hash password before saving
         if (!string.IsNullOrEmpty(admin.Password))
             admin.Password = _passwordService.HashPassword(admin.Password);
 
