@@ -1,5 +1,5 @@
-FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build
-WORKDIR /src
+FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
+WORKDIR /TechnologyII
 COPY ["./", "."]
 RUN dotnet publish "api/api.csproj" -c Release -o /app/publish --runtime linux-musl-x64 --self-contained true /p:PublishSingleFile=true
 
