@@ -1,13 +1,13 @@
-using api.services;
 using efscaffold;
 using efscaffold.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using api.services; // استدعاء خدمة PasswordService
 
 namespace api.Entity;
 
 [ApiController]
-[Route("api/users")]
+[Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
     private readonly MyDbContext _context;
@@ -19,9 +19,7 @@ public class UsersController : ControllerBase
         _passwordService = passwordService;
     }
 
-    // ----------------------
-    // GET: /api/users
-    // ----------------------
+    // GET: /api/Users
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -29,9 +27,7 @@ public class UsersController : ControllerBase
         return Ok(users);
     }
 
-    // ----------------------
-    // GET: /api/users/{id}
-    // ----------------------
+    // GET: /api/Users/{id}
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(string id)
     {
@@ -42,47 +38,49 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
-    // ----------------------
-    // POST: /api/users
-    // ----------------------
+    // POST: /api/Users
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] User user)
     {
         if (user == null)
             return BadRequest("User is null.");
 
-        // ✅ Hash password before saving
+        user.Id = Guid.NewGuid().ToString();
+
+        // تشفير كلمة المرور قبل الحفظ
         if (!string.IsNullOrEmpty(user.Password))
+        {
             user.Password = _passwordService.HashPassword(user.Password);
+        }
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
-
         return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
     }
 
-    // ----------------------
-    // PUT: /api/users/{id}
-    // ----------------------
+    // PUT: /api/Users/{id}
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(string id, [FromBody] User user)
+    public async Task<IActionResult> Update(string id, [FromBody] User updatedUser)
     {
-        if (id != user.Id)
+        if (id != updatedUser.Id)
             return BadRequest("Id mismatch.");
 
         var existingUser = await _context.Users.FindAsync(id);
         if (existingUser == null)
             return NotFound($"User with id {id} not found.");
 
-        existingUser.Name = user.Name;
-        existingUser.Email = user.Email;
-        existingUser.Phone = user.Phone;
-        existingUser.Balance = user.Balance;
-        existingUser.Isactive = user.Isactive;
+        // تحديث الحقول المطلوبة
+        existingUser.Name = updatedUser.Name ?? existingUser.Name;
+        existingUser.Phone = updatedUser.Phone ?? existingUser.Phone;
+        existingUser.Email = updatedUser.Email ?? existingUser.Email;
+        existingUser.Balance = updatedUser.Balance != default ? updatedUser.Balance : existingUser.Balance;
+        existingUser.Isactive = updatedUser.Isactive;
 
-        // ✅ Hash password if updated
-        if (!string.IsNullOrEmpty(user.Password))
-            existingUser.Password = _passwordService.HashPassword(user.Password);
+        // تحديث كلمة المرور فقط إذا تم تمريرها
+        if (!string.IsNullOrEmpty(updatedUser.Password))
+        {
+            existingUser.Password = _passwordService.HashPassword(updatedUser.Password);
+        }
 
         _context.Users.Update(existingUser);
         await _context.SaveChangesAsync();
@@ -90,9 +88,7 @@ public class UsersController : ControllerBase
         return Ok(existingUser);
     }
 
-    // ----------------------
-    // DELETE: /api/users/{id}
-    // ----------------------
+    // DELETE: /api/Users/{id}
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
     {

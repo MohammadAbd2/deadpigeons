@@ -1,12 +1,8 @@
-using System.ComponentModel.DataAnnotations;
-
-namespace api;
-
-public class AppOptions
+namespace api
 {
-    
-    [MinLength(1)] public string DbConnectionString { get; set; }
-    [MinLength(1)] public string JWTSecret { get; set; }
-    
-    
+    public class AppOptions
+    {
+        public string? DbConnectionString { get; set; }
+        public string? JWTSecret { get; set; }
+    }
 }

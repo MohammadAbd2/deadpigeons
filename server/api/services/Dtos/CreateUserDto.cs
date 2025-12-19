@@ -5,18 +5,18 @@ namespace api.services.Dtos;
 public record CreateUserDto
 {
     [Required]
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
     [Required]
-    public string Phone { get; set; }
+    public required string Phone { get; set; }
 
     [Required]
-    public string Email { get; set; }
+    public required string Email { get; set; }
 
-    [Required]
-    public string Password { get; set; }
+   
+    public  string? Password { get; set; }
 
-    public int Balance { get; set; }
+    public required int Balance { get; set; }
 
-    public bool Isactive { get; set; }
+    public required bool Isactive { get; set; }
 }

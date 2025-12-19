@@ -12,7 +12,7 @@ using efscaffold;
 namespace efscaffold.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20251211203411_InitialCreate")]
+    [Migration("20251219021608_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace efscaffold.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.0")
+                .HasAnnotation("ProductVersion", "9.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -53,11 +53,6 @@ namespace efscaffold.Migrations
                         .HasColumnType("text")
                         .HasColumnName("id");
 
-                    b.Property<string>("AdminId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("adminid");
-
                     b.Property<string>("BoardId")
                         .IsRequired()
                         .HasColumnType("text")
@@ -67,9 +62,14 @@ namespace efscaffold.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("date");
 
-                    b.Property<bool>("IsWinner")
-                        .HasColumnType("boolean")
-                        .HasColumnName("iswinner");
+                    b.Property<int>("TotalWinners")
+                        .HasColumnType("integer")
+                        .HasColumnName("totalwinners");
+
+                    b.PrimitiveCollection<string[]>("WinningUsers")
+                        .IsRequired()
+                        .HasColumnType("text[]")
+                        .HasColumnName("winningusers");
 
                     b.HasKey("Id")
                         .HasName("adminboardhistory_pkey");
@@ -95,6 +95,37 @@ namespace efscaffold.Migrations
                         .HasName("boards_pkey");
 
                     b.ToTable("boards", "deadpigeons");
+                });
+
+            modelBuilder.Entity("User", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Balance")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Isactive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id")
+                        .HasName("users_pkey");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("UserBoard", b =>
@@ -192,46 +223,6 @@ namespace efscaffold.Migrations
                         .HasName("transactions_pkey");
 
                     b.ToTable("transactions", "deadpigeons");
-                });
-
-            modelBuilder.Entity("efscaffold.Models.User", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text")
-                        .HasColumnName("id");
-
-                    b.Property<int>("Balance")
-                        .HasColumnType("integer")
-                        .HasColumnName("balance");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("email");
-
-                    b.Property<bool>("Isactive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("isactive");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("password");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("phone");
-
-                    b.HasKey("Id")
-                        .HasName("users_pkey");
-
-                    b.ToTable("users", "deadpigeons");
                 });
 
             modelBuilder.Entity("efscaffold.Models.UserBoardHistory", b =>

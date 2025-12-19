@@ -35,8 +35,8 @@ namespace efscaffold.Migrations
                 {
                     id = table.Column<string>(type: "text", nullable: false),
                     boardid = table.Column<string>(type: "text", nullable: false),
-                    adminid = table.Column<string>(type: "text", nullable: false),
-                    iswinner = table.Column<bool>(type: "boolean", nullable: false),
+                    totalwinners = table.Column<int>(type: "integer", nullable: false),
+                    winningusers = table.Column<string[]>(type: "text[]", nullable: false),
                     date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -124,21 +124,20 @@ namespace efscaffold.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "users",
-                schema: "deadpigeons",
+                name: "Users",
                 columns: table => new
                 {
-                    id = table.Column<string>(type: "text", nullable: false),
-                    name = table.Column<string>(type: "text", nullable: false),
-                    phone = table.Column<string>(type: "text", nullable: false),
-                    email = table.Column<string>(type: "text", nullable: false),
-                    password = table.Column<string>(type: "text", nullable: false),
-                    balance = table.Column<int>(type: "integer", nullable: false),
-                    isactive = table.Column<bool>(type: "boolean", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Phone = table.Column<string>(type: "text", nullable: true),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Password = table.Column<string>(type: "text", nullable: true),
+                    Balance = table.Column<int>(type: "integer", nullable: false),
+                    Isactive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("users_pkey", x => x.id);
+                    table.PrimaryKey("users_pkey", x => x.Id);
                 });
         }
 
@@ -174,8 +173,7 @@ namespace efscaffold.Migrations
                 schema: "deadpigeons");
 
             migrationBuilder.DropTable(
-                name: "users",
-                schema: "deadpigeons");
+                name: "Users");
         }
     }
 }

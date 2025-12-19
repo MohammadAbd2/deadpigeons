@@ -1,23 +1,31 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace api;
-
-public static class AppOptionsExtensions
+namespace api
 {
-    public static AppOptions AddAppOptions(this IServiceCollection services, IConfiguration configuration)
+    public static class AppOptionsExtensions
     {
-        var appOptions = new AppOptions();
-        configuration.GetSection(nameof(AppOptions)).Bind(appOptions);
+        public static AppOptions AddAppOptions(this IServiceCollection services, IConfiguration configuration)
+        {
+            var appOptions = new AppOptions();
+            // Bind values from "AppOptions" section
+            configuration.GetSection("AppOptions").Bind(appOptions);
 
-        services.Configure<AppOptions>(configuration.GetSection(nameof(AppOptions)));
+            // Register AppOptions in DI
+            services.Configure<AppOptions>(configuration.GetSection("AppOptions"));
+            services.AddSingleton(appOptions);
 
-        ICollection<ValidationResult> results = new List<ValidationResult>();
-        var validated = Validator.TryValidateObject(appOptions, new ValidationContext(appOptions), results, true);
-        if (!validated)
-            throw new Exception(
-                $"hey buddy, BackEnd Server is here. You're probably missing an environment variable / appsettings.json stuff / repo secret on github. Here's the technical error: " +
-                $"{string.Join(", ", results.Select(r => r.ErrorMessage))}");
+            // Validate required properties
+            var results = new List<ValidationResult>();
+            bool valid = Validator.TryValidateObject(appOptions, new ValidationContext(appOptions), results, true);
+            if (!valid)
+            {
+                throw new Exception(
+                    "AppOptions validation failed. Missing required configuration values: " +
+                    string.Join(", ", results.Select(r => r.ErrorMessage))
+                );
+            }
 
-        return appOptions;
+            return appOptions;
+        }
     }
 }

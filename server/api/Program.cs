@@ -1,135 +1,103 @@
 using System.Text;
-using System.Text.Json;
-using Microsoft.OpenApi.Models;
 using api;
-using api.services;
 using efscaffold;
-using efscaffold.Models; 
-using Microsoft.AspNetCore.Mvc;
+using efscaffold.Models;
+using api.services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-public class Program
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// =================== Configuration ===================
+builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+var configuration = builder.Configuration;
+
+// =================== AppOptions ===================
+var appOptions = builder.Services.AddAppOptions(configuration);
+if (string.IsNullOrEmpty(appOptions.JWTSecret))
+    throw new InvalidOperationException("JWTSecret is not set. Configure it in appsettings.json or environment variables.");
+
+builder.Services.AddSingleton(appOptions);
+
+// =================== Services ===================
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPasswordService, PasswordService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
+
+builder.Services.AddDbContext<MyDbContext>(options =>
 {
-    public static void Main(string[] args)
+    options.UseNpgsql(
+        "Host=ep-soft-resonance-ad7u4o8b-pooler.c-2.us-east-1.aws.neon.tech;" +
+        "Database=deadpigeons;" +
+        "Username=neondb_owner;" +
+        "Password=npg_mgTa1eJtVC7o;" +
+        "SSL Mode=Require;" +
+        "Trust Server Certificate=true;" + 
+        "Channel Binding=Require;",
+        npgsqlOptions => npgsqlOptions.EnableRetryOnFailure(5)
+    );
+});
+
+// =================== Controllers & ProblemDetails ===================
+builder.Services.AddControllers();
+builder.Services.AddProblemDetails();
+
+// =================== Swagger ===================
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
     {
-        var app = Program.BuildApp(args);
-        app.Run();
-    }
-    public static void ConfigureServices(IServiceCollection services)
+        Title = "My API",
+        Version = "v1",
+        Description = "Sample API with Swagger for local testing"
+    });
+});
+
+// =================== CORS ===================
+builder.Services.AddCors();
+
+// =================== JWT Authentication ===================
+var key = Encoding.ASCII.GetBytes(appOptions.JWTSecret);
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
     {
-        var provider = services.BuildServiceProvider();
-        var configuration = provider.GetRequiredService<IConfiguration>();
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ClockSkew = TimeSpan.Zero
+    };
+});
 
-        // Load options from configuration
-        var appOptions = services.AddAppOptions(configuration);
+var app = builder.Build();
 
-        if (string.IsNullOrEmpty(appOptions.JWTSecret))
-        {
-            throw new InvalidOperationException(
-                "JWTSecret is not set. Please configure it in appsettings.json or environment variables."
-            );
-        }
-        //  Register AppOptions as singleton
-        services.AddSingleton(appOptions);
-        services.AddScoped<IUserService, UserService>();
-        services.AddDbContext<MyDbContext>(conf => { conf.UseNpgsql(appOptions.DbConnectionString);});
-        services.AddScoped<IPasswordService, PasswordService>();
-        services.AddScoped<IJwtService, JwtService>();
+// =================== Middleware ===================
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API v1");
+    c.RoutePrefix = string.Empty;
+});
 
+app.UseRouting();
+app.UseCors(config => config
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowAnyOrigin()
+    .SetIsOriginAllowed(_ => true));
 
-        static void ConfigureServicesInternal(IServiceCollection servicesInternal)
-        {
-            // Dependency Injections Here
-        }
+app.UseAuthentication();
+app.UseAuthorization();
 
-        ConfigureServicesInternal(services);
+// =================== Map Controllers ===================
+app.MapControllers();
 
-        services.AddDbContext<MyDbContext>(conf => { conf.UseNpgsql(appOptions.DbConnectionString);});
-        services.AddEndpointsApiExplorer();
-        services.AddScoped<IPasswordService, PasswordService>();
-        
-        services.AddSwaggerGen(options =>
-        {
-            options.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Title = "My API",
-                Version = "v1",
-                Description = "Sample API with Swagger for local testing"
-            });
-        });
-
-        services.AddCors();
-        services.AddControllers();
-        services.AddProblemDetails();
-        
-        // Add JWT authentication
-        var key = Encoding.ASCII.GetBytes(appOptions.JWTSecret);
-        services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = "JwtBearer";
-            options.DefaultChallengeScheme = "JwtBearer";
-        }).AddJwtBearer("JwtBearer", options =>
-        {
-            options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                ClockSkew = TimeSpan.Zero
-            };
-        });
-
-        services.AddScoped<IJwtService, JwtService>();
-        
-        
-    }
-    
-    
-
-    public static WebApplication BuildApp(string[] args)
-    {
-        var builder = WebApplication.CreateBuilder(args);
-        
-        // add efscaffold which is the project that contains DbContext
-        builder.Services.AddDbContext<MyDbContext>(options =>
-            options.UseNpgsql(
-                builder.Configuration.GetConnectionString("DefaultConnection"),
-                b => b.MigrationsAssembly("efscaffold")
-            )
-        );
-        
-        // add service
-        builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-        ConfigureServices(builder.Services);
-
-        var app = builder.Build();
-
-        app.UseSwagger();
-        app.UseSwaggerUI(options =>
-        {
-            options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API v1");
-            options.RoutePrefix = string.Empty;
-        });
-
-        app.UseRouting();
-
-        app.UseCors(config => config
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowAnyOrigin()
-            .SetIsOriginAllowed(_ => true));
-        
-        
-        app.UseAuthentication();
-        app.UseAuthorization();
-
-        app.MapControllers();
-
-        return app;
-    }
-
-}
-
-
+app.Run();
 

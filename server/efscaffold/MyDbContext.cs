@@ -1,13 +1,10 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using efscaffold.Models;
 
 namespace efscaffold;
 
 public partial class MyDbContext : DbContext
 {
-    public MyDbContext() { }
-
     public MyDbContext(DbContextOptions<MyDbContext> options)
         : base(options) { }
 
@@ -20,20 +17,12 @@ public partial class MyDbContext : DbContext
     public virtual DbSet<UserBoard> UserBoard { get; set; }
     public virtual DbSet<AdminBoardHistory> AdminBoardHistory { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-            throw new InvalidOperationException("DbContextOptions were not configured.");
-    }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Admin>().HasKey(e => e.Id).HasName("admins_pkey");
         modelBuilder.Entity<Board>().HasKey(e => e.Id).HasName("boards_pkey");
         modelBuilder.Entity<Transaction>().HasKey(e => e.Id).HasName("transactions_pkey");
         modelBuilder.Entity<User>().HasKey(e => e.Id).HasName("users_pkey");
-
-        // New entities / renamed
         modelBuilder.Entity<UserBoardHistory>().HasKey(e => e.Id).HasName("userboardhistory_pkey");
         modelBuilder.Entity<AdminBoard>().HasKey(e => e.Id).HasName("adminboard_pkey");
         modelBuilder.Entity<UserBoard>().HasKey(e => e.Id).HasName("userboard_pkey");

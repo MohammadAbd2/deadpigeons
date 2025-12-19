@@ -1,33 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
-namespace efscaffold.Models;
-
-[Table("users", Schema = "deadpigeons")]
-public partial class User
+public class User
 {
     [Key]
-    [Column("id")]
-    public string Id { get; set; } = null!;
+    public string Id { get; set; } = Guid.NewGuid().ToString();
 
-    [Column("name")]
-    public string Name { get; set; } = null!;
+    public string Name { get; set; } = string.Empty;
 
-    [Column("phone")]
-    public string Phone { get; set; } = null!;
+    public string? Phone { get; set; }
 
-    [Column("email")]
-    public string Email { get; set; } = null!;
+    public string Email { get; set; } = string.Empty;
+    
+    // will not appear in Json if it's null
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Password { get; set; } //  could be empty
 
-    [Column("password")]
-    public string Password { get; set; } = null!;
-
-    [Column("balance")]
     public int Balance { get; set; }
 
-    [Column("isactive")]
-    public bool Isactive { get; set; }
+    public bool Isactive { get; set; } = true;
 }
