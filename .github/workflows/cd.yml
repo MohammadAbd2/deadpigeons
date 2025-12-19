@@ -1,4 +1,4 @@
-name: CD - Deploy
+name: CD - Deploy to Fly.io
 
 on:
   workflow_run:
@@ -10,18 +10,21 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      # 1. Checkout the repository
-      - name: Checkout repository
+      # 1. Checkout the main branch
+      - name: Checkout main branch
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: main
 
-      # 2. Download backend artifact from previous CI workflow
+      # 2. Download backend artifact
       - name: Download backend artifact
         uses: actions/download-artifact@v4
         with:
           name: backend
           path: ./publish
 
-      # 3. Download frontend artifact from previous CI workflow
+      # 3. Download frontend artifact
       - name: Download frontend artifact
         uses: actions/download-artifact@v4
         with:
